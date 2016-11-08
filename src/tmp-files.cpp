@@ -6,42 +6,38 @@
 
 int create_tmp_filename(char* tmp_name){
 
-#if defined(__linux) || defined(__APPLE__)
+    #if defined(__linux) || defined(__APPLE__)
+        int fd;
 
-    int fd;
+        // Create and open temporary file inside tmp std dir
+	    if ( (fd = mkstemp(tmp_name)) == -1 ) {
+		    fprintf(stderr,"Error on the creation of the tmp file: %s.\n", tmp_name);
+		    return -1;
+	    }
 
-    // Create and open temporary file inside tmp std dir
-	if ( (fd = mkstemp(tmp_name)) == -1 ) {
-		fprintf(stderr,"Error on the creation of the tmp file: %s.\n", tmp_name);
-		return -1;
-	}
+        // Close file just opened
+        close(fd);
+    #else
+	    char tmp_string[L_tmpnam];
 
-    // Close file just opened
-    close(fd);
+	    // Get std dir for temp files
+	    if ( GetTempPath(FILENAME_MAX,tmp_name) == 0 ) {
+		    fprintf(stderr, "Error getting temporary directory path.\n");
+		    return -1;
+	    }
 
-#else
+	    // removing double '\'
+        tmpName[strlen(tmp_name)-1] = '\0';
 
-	char tmp_string[L_tmpnam];
+	    // creating unique fileName
+	    if ( tmpnam(tmp_string) == NULL ) {
+		    fprintf(stderr, "Error on the generation of a unique temp file name.\n");
+		    return -1;
+	    }
 
-	// Get std dir for temp files
-	if ( GetTempPath(FILENAME_MAX,tmp_name) == 0 ) {
-		fprintf(stderr, "Error getting temporary directory path.\n");
-		return -1;
-	}
-
-	// removing double '\'
-    tmpName[strlen(tmp_name)-1] = '\0';
-
-	// creating unique fileName
-	if ( tmpnam(tmp_string) == NULL ) {
-		fprintf(stderr, "Error on the generation of a unique temp file name.\n");
-		return -1;
-	}
-
-	// concat temp file name
-	strcat(tmp_name,tmp_string);
-
-#endif
+	    // concat temp file name
+	    strcat(tmp_name,tmp_string);
+    #endif
 
 	return 0;
 }
@@ -51,11 +47,11 @@ int rm_tmp_file(char* tmp_name) {
 	char *command;
 
 	if ( file_exist(tmp_name) ) {
-#if defined(__linux) || defined(__APPLE__)
-		command = strdup("rm -f ");
-#else
-	    command = strdup("del ");
-#endif
+        #if defined(__linux) || defined(__APPLE__)
+	        command = strdup("rm -f ");
+        #else
+        	command = strdup("del ");
+        #endif
 		command = cat_strings(command, tmp_name);
 		if ( system(command) == -1 ) {
 			fprintf(stderr,"Error on removing %s.\n", tmp_name);
