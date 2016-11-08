@@ -14,11 +14,13 @@ vector<string> find_woken_states(unsigned);
 vector<string> find_source_states(string);
 int state_exist_set(string, vector<string>);
 int state_exist_window(string, unsigned);
-void push_back_inputs(unsigned, unsigned);
+void push_back_signals(vector<signal_type>*, unsigned, unsigned);
 int is_marked(unsigned, state_type);
-void add_input(string, unsigned, unsigned, unsigned);
-int input_exist(string);
+void add_signal(vector<signal_type>*, string, unsigned, unsigned, unsigned);
+int signal_exist(string, vector<signal_type>);
 int run_espresso(char*, char*);
 void clear_karnaugh_map();
+void print_signals(vector<signal_type>);
+int write_karnaugh_map(char*);
 
 #endif

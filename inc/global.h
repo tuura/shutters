@@ -37,5 +37,10 @@ extern string marking_path;
 extern net_type network;
 extern vector<window_type> windows;
 extern espresso_format km;
+#if defined(__linux) || defined(__APPLE__)
+    extern char tmp_path[];
+#else
+	extern char tmp_path[FILENAME_MAX];
+#endif
 
 #endif
