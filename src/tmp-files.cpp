@@ -1,0 +1,101 @@
+#if defined(__linux) || defined(__APPLE__)
+	#include "tmp-files.h"
+#else
+	#include "Path\tmp-files.h"
+#endif
+
+int create_tmp_filename(char* tmp_name){
+
+#if defined(__linux) || defined(__APPLE__)
+
+    int fd;
+
+    // Create and open temporary file inside tmp std dir
+	if ( (fd = mkstemp(tmp_name)) == -1 ) {
+		fprintf(stderr,"Error on the creation of the tmp file: %s.\n", tmp_name);
+		return -1;
+	}
+
+    // Close file just opened
+    close(fd);
+
+#else
+
+	char tmp_string[L_tmpnam];
+
+	// Get std dir for temp files
+	if ( GetTempPath(FILENAME_MAX,tmp_name) == 0 ) {
+		fprintf(stderr, "Error getting temporary directory path.\n");
+		return -1;
+	}
+
+	// removing double '\'
+    tmpName[strlen(tmp_name)-1] = '\0';
+
+	// creating unique fileName
+	if ( tmpnam(tmp_string) == NULL ) {
+		fprintf(stderr, "Error on the generation of a unique temp file name.\n");
+		return -1;
+	}
+
+	// concat temp file name
+	strcat(tmp_name,tmp_string);
+
+#endif
+
+	return 0;
+}
+
+// removing temporary files from the HDD
+int rm_tmp_file(char* tmp_name) {
+	char *command;
+
+	if ( file_exist(tmp_name) ) {
+#if defined(__linux) || defined(__APPLE__)
+		command = strdup("rm -f ");
+#else
+	    command = strdup("del ");
+#endif
+		command = cat_strings(command, tmp_name);
+		if ( system(command) == -1 ) {
+			fprintf(stderr,"Error on removing %s.\n", tmp_name);
+			return -1;
+		}
+		free(command);
+	}
+
+	return 0;
+}
+
+// Check file existance
+int file_exist(char *tmp_name) {
+	FILE *fp = fopen(tmp_name, "r");
+	if ( fp!=NULL ) fclose (fp);
+	return (fp!=NULL);
+}
+
+// Concatenates two strings creating the right portion in the memory
+char* cat_strings(char *str1, char *str2) {
+
+	char *newStr;
+
+	newStr = (char *) malloc(sizeof(char) * (strlen(str1) + strlen(str2) + 1));
+	sprintf(newStr, "%s%s", str1, str2);
+	
+	free(str1);
+
+	return newStr;
+}
+
+// Concatenate one string with a character
+char* cat_char(char *str1, char c) {
+
+	char *newStr;
+
+	newStr = (char *) malloc(sizeof(char) * (strlen(str1) + 2));
+	sprintf(newStr, "%s%c", str1, c);
+	
+	free(str1);
+
+	return newStr;
+}

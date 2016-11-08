@@ -6,9 +6,11 @@
 
 // Global variables
 #if defined(__linux) || defined(__APPLE__)
-	string espresso_path ("espresso");
+	string espresso_path("espresso");
+	char tmp_path[] = "/tmp/karnaugh-map.XXXXXX";
 #else
-	string espresso_path ("espresso.exe");
+	string espresso_path("espresso.exe");
+	char tmp_path[FILENAME_MAX];
 #endif
 string marking_path;
 net_type network;
@@ -28,7 +30,13 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    print_windows();
+    // Print data structure
+    // print_structure();
+
+    // Generate Boolean equations
+    generate_wakeup_conditions();
+
+    cout << "Program terminated.\n";
 
     return 0;
 

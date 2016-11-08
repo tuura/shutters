@@ -9,22 +9,28 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
 
 // Files to include
 #if defined(__linux) || defined(__APPLE__)
     #include "global.h"
     #include "par-parser.h"
-    #include "mark-parser.h" 
+    #include "mark-parser.h"
+    #include "tmp-files.h"
+    #include "eq-generator.h"
 #else
     #include "PATH\global.h"
     #include "PATH\par-parser.h"
     #include "PATH\mark-parser.h"
+    #include "PATH\tmp-files.h"
+    #include "PATH\eq-generator.h"
 #endif
 
 // Key-words defines
-#define TRANSITIONS  ".transitions"
-#define INITIAL      ".initial"
-#define WINDOW       ".window"
-#define STATE        ".state"
+#define ESPRESSO_OPTIONS    "-D so -o eqntott"
+#define TRANSITIONS         ".transitions"
+#define INITIAL             ".initial"
+#define WINDOW              ".window"
+#define STATE               ".state"
 
 #endif

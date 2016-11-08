@@ -1,0 +1,35 @@
+.transitions
+
+s1 x s2
+s1 a s3
+s3 x s4
+s2 a s4
+s3 b s5
+s5 x s0
+s4 b s0
+s7 y s4
+s7 b s8
+s8 y s0
+s8 c s9
+s9 y s6
+s0 c s6
+s6 q s7
+s0 p s1
+
+.initial s0
+
+.window 1
+.state s4 p1 p5
+.state s0 p2 p5
+.state s7 p1 p4
+.state s8 p2 p4
+.state s9 p3 p4
+.state s6 p3 p5
+
+.window 2
+.state s1 p1 p4
+.state s2 p1 p5
+.state s3 p2 p4
+.state s4 p2 p5
+.state s5 p3 p4
+.state s0 p3 p5

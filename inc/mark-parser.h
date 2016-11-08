@@ -14,6 +14,8 @@ window_type read_window(ifstream&);
 int read_state(ifstream&, window_type*, state_type*);
 int place_exist(vector<string>, string);
 unsigned place_index(vector<string>, string);
+void print_structure();
+void print_transitions();
 void print_windows();
 
 #endif

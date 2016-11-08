@@ -1,0 +1,111 @@
+.transitions
+
+s33 gp_ack+ s35
+s11 oc+ s12
+s6 gn- s7
+s0 uv+ s17
+s0 uv+ s22
+s0 zc+ s28
+s35 uv- s11
+s26 uv- s11
+s17 zc+ s1
+s17 gn- s18
+s14 gn+ s15
+s13 gp_ack- s14
+s7 gn_ack- s8
+s1 gn- s2
+s1 zc- s6
+s36 zc- s35
+s23 gn_ack- s24
+s32 uv+ s31
+s22 gn- s23
+s19 zc+ s3
+s19 gp+ s20
+s16 oc- s0
+s3 zc- s8
+s3 gp+ s4
+s34 zc- s33
+s34 gp_ack+ s36
+s25 gp_ack+ s26
+s18 zc+ s2
+s18 gn_ack- s19
+s31 gp+ s34
+s28 uv+ s27
+s28 gn- s30
+s9 gp_ack+ s10
+s2 zc- s7
+s2 gn_ack- s3
+s30 uv+ s29
+s30 gn_ack- s32
+s29 gn_ack- s31
+s27 gn- s29
+s21 zc+ s5
+s15 gn_ack+ s16
+s24 gp+ s25
+s20 zc+ s4
+s20 gp_ack+ s21
+s12 gp- s13
+s10 uv- s11
+s8 gp+ s9
+s5 zc- s10
+s4 zc- s9
+s4 gp_ack+ s5
+
+.initial s0
+
+.window 1
+.state s11 p1
+.state s12 p2
+.state s6 p10 p15
+.state s7 p11 p15
+.state s0 p3
+.state s17 p10 p13
+.state s1 p10 p14
+.state s18 p11 p13
+.state s14 p4
+.state s15 p5
+.state s13 p6
+.state s8 p12 p15
+.state s2 p11 p14
+.state s19 p12 p13
+.state s3 p12 p14
+.state s20 p8 p13
+.state s16 p7
+.state s4 p8 p14
+.state s9 p8 p15
+.state s10 p9 p15
+.state s21 p9 p13
+.state s5 p9 p14
+
+.window 2
+.state s33 p8 p14
+.state s35 p9 p14
+.state s11 p1
+.state s12 p2
+.state s0 p3
+.state s28 p10 p15
+.state s14 p4
+.state s15 p5
+.state s13 p6
+.state s36 p9 p13
+.state s32 p12 p15
+.state s31 p12 p16
+.state s16 p7
+.state s34 p8 p13
+.state s27 p10 p16
+.state s30 p11 p15
+.state s29 p11 p16
+
+.window 3
+.state s11 p3
+.state s12 p4
+.state s0 p7
+.state s22 p5
+.state s26 p2
+.state s14 p8
+.state s15 p9
+.state s13 p10
+.state s23 p6
+.state s24 p11
+.state s16 p12
+.state s25 p1

@@ -20,6 +20,7 @@ int parse_marking() {
     read_windows(file);
 
     file.close();
+
     return 0;
 }
 
@@ -107,7 +108,7 @@ int read_state(ifstream& file, window_type *w, state_type *s) {
             return -1;
         }
 
-        if ( !place_exist((*w).places, word) ) {
+        if ( place_exist((*w).places, word) ) {
             (*w).places.push_back(word);
             (*s).marking.push_back( (*w).places.size()-1 );
         } else {
@@ -123,11 +124,11 @@ int place_exist(vector<string> places, string word) {
 
     for(unsigned i = 0; i < places.size(); i++) {
         if ( !places[i].compare(word) ) {
-            return 1;
+            return 0;
         }
     }
 
-    return 0;
+    return 1;
 }
 
 // Where (index) is the place in the set?
@@ -144,10 +145,31 @@ unsigned place_index(vector<string> places, string word) {
     return i;
 }
 
-// Print the window structure
-void print_windows() {
+// Print the data structure read
+void print_structure() {
 
     cout << "Windows read by the file " << marking_path << ":\n";
+    print_transitions();
+    print_windows();
+    cout << "\n";
+
+    return;
+}
+
+// Print network transitions
+void print_transitions() {
+
+    cout << "\nTransitions:" << "\n";
+
+    for(unsigned i = 0; i < network.source.size(); i++) {
+        cout << "\t" << network.source[i] << " (" << network.arc[i] << ")-> " << network.dest[i] << "\n";
+    }
+
+    return;
+}
+
+// Print windows
+void print_windows() {
 
     for(unsigned i = 0; i < windows.size(); i++) {
 
@@ -169,8 +191,6 @@ void print_windows() {
 
         }
     }
-
-    cout << "\n";
 
     return;
 }

@@ -51,7 +51,7 @@ rmtmp:
 	@echo "Temporary files removed correctly."
 
 help:
-	@echo "\nHelp for $(PROJECT_NAME) Makefile:"
+	@echo "Help for $(PROJECT_NAME) Makefile:"
 	@echo "\t-make:\t\tcompiling and install $(PROJECT_NAME)"
 	@echo "\t-make clean:\tremove $(PROJECT_NAME)"
 	@echo "\t-make rmtmp:\tremove temporary files from the project"
