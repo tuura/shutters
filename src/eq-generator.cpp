@@ -36,60 +36,114 @@ int generate_marking_conditions() {
 // Generate wakeup marking conditions of one windows
 int generate_marking_window(unsigned wi) {
 
-    vector<string>  input_names;
-    vector<int>     input_val;
-    vector<string>  output_names;
-    vector<int>     output_val;
+    vector<string> woken_states = find_woken_states(wi);
     unsigned n_windows = windows.size();
+    unsigned n_woken_states = woken_states.size();
+    clear_karnaugh_map();
 
-    for (unsigned i = 0; i < n_windows; i++) {
-        if ( wi != i ) {
-            vector<string> common_states = find_common_states(wi, i);
-            vector<string> woken_states = find_woken_states(common_states, wi, i);
-
-            // debug
-            cout << "COMMON: " << wi << " - " << i << "\n";
-            for (unsigned k = 0; k < common_states.size(); k++) {
-                cout << common_states[k] << " ";
+    for (unsigned i = 0; i < n_woken_states; i++) {
+        for (unsigned j = 0; j < n_windows; j++) {
+            int si;
+            if ( wi != j && ( si = state_exist_window(woken_states[i], j)) != -1 ) {
+                push_back_inputs((unsigned)si, j);
             }
-            cout << "\n";
+        }
+    }
 
-            cout << "WOKEN: \n";
-            for (unsigned k = 0; k < woken_states.size(); k++) {
-                cout << woken_states[k] << " ";
-            }
-            cout << "\n";
+    // Debug
+    for (unsigned i = 0; i < km.inputs.size(); i++) {
+        cout << km.inputs[i].name << ": ";
+        for (unsigned j = 0; j < km.inputs[i].marking.size(); j++) {
+            cout << km.inputs[i].marking[j] << " ";
+        }
+        cout << "\n";
+    }
+    cout << "===\n";
+
+    return 0;
+}
+
+// Accumulate all the input values into the set for Espresso format
+void push_back_inputs(unsigned si, unsigned wi) {
+
+    unsigned n_places = windows[wi].places.size();
+
+    // Copy input names and markings
+    for (unsigned i = 0; i < n_places; i++) {
+        string name_input = "w" + to_string(wi+1) + windows[wi].places[i];
+        add_input(name_input, si, wi, i);
+    }
+
+    return;
+}
+
+// Add input into the set for the wakeup condition generation
+void add_input(string name_input, unsigned si, unsigned wi, unsigned pi) {
+    
+    int ii;
+    
+    if ( (ii = input_exist(name_input)) != -1 ) {
+        km.inputs[(unsigned)ii].marking.push_back(is_marked(pi, windows[wi].states[si]));
+    } else {
+        signal_type signal;
+        signal.name = name_input;
+        signal.marking.push_back(is_marked(pi, windows[wi].states[si]));
+        km.inputs.push_back(signal);
+    }
+    return;
+}
+
+// Is the input already inside the set?
+int input_exist(string name_input) {
+
+    unsigned n_inputs = km.inputs.size();
+
+    for (unsigned i = 0; i < n_inputs; i++) {
+        if ( !km.inputs[i].name.compare(name_input) ) {
+            return (int)i;
+        }
+    }
+
+    return -1;
+}
+
+// Is place marked in the state considered?
+int is_marked(unsigned pi, state_type s) {
+
+    unsigned n_marking = s.marking.size();
+
+    for (unsigned i = 0; i < n_marking; i++) {
+        if (s.marking[i] == pi) {
+            return 1;
         }
     }
 
     return 0;
 }
 
-// Find common states which have incoming arcs of states from window i not in 
-// the common set
-vector<string> find_woken_states(vector<string> common_states, unsigned wi, unsigned i) {
+// Find states which need wakeup Boolean conditions
+vector<string> find_woken_states(unsigned wi) {
     
     vector<string> woken_states;
-    unsigned n_common_states = common_states.size();
+    unsigned n_states = windows[wi].states.size();
 
-    for (unsigned j = 0;  j < n_common_states; j++) {
+    for (unsigned j = 0; j < n_states; j++) {
 
-        vector<string> source_states = find_source_states(common_states[j]);
-        unsigned n_sources = source_states.size();
+        vector<string> sources = find_source_states(windows[wi].states[j].name);
+        unsigned n_sources = sources.size();
 
         for (unsigned k = 0; k < n_sources; k++) {
-            if ( !state_exist_set(source_states[k], common_states) &&\
-                 state_exist_window(source_states[k], i)           &&\
-                 !state_exist_set(common_states[j], woken_states)) {
-                woken_states.push_back(common_states[j]);
+            if ( state_exist_window(sources[k], wi) == -1 &&
+                 !state_exist_set(windows[wi].states[j].name, woken_states) ) {
+                woken_states.push_back(windows[wi].states[j].name);
             }
         }
-
     }
 
     return woken_states;
 }
 
+// Does the state exist in the set of states 'set'?
 int state_exist_set(string state_name, vector<string> set) {
     unsigned ncs = set.size();
 
@@ -102,16 +156,17 @@ int state_exist_set(string state_name, vector<string> set) {
     return 0;
 }
 
+// Does the state exist in the window with index 'wi'?
 int state_exist_window(string state_name, unsigned wi) {
     unsigned nsw = windows[wi].states.size();
 
     for (unsigned i = 0; i < nsw; i++) {
         if ( !state_name.compare(windows[wi].states[i].name) ) {
-            return 1;
+            return (int)i;
         }
     }
 
-    return 0;
+    return -1;
 }
 
 // Find all source states in the network
@@ -127,24 +182,6 @@ vector<string> find_source_states(string state_name) {
     }
 
     return source_states;
-}
-
-// Find common states between two windows
-vector<string> find_common_states(unsigned si, unsigned di) {
-
-    vector<string> intersections;
-    unsigned s_states = windows[si].states.size();
-    unsigned d_states = windows[di].states.size();
-    
-    for (unsigned i = 0; i < s_states; i++) {
-        for (unsigned j = 0; j < d_states; j++) {
-            if ( !windows[si].states[i].name.compare(windows[di].states[j].name) ) {
-                intersections.push_back(windows[si].states[i].name);
-            }
-        }
-    }
-
-    return intersections;
 }
 
 // Run Espresso logic minimizer over a karnaugh map
@@ -169,4 +206,22 @@ int run_espresso(char *espresso_path, char *karnaugh_map) {
     free(command);
 
 	return 0;
+}
+
+void clear_karnaugh_map() {
+
+    unsigned n_inputs = km.inputs.size();
+    unsigned n_outputs = km.outputs.size();
+
+    for (unsigned i = 0; i < n_inputs; i++) {
+        km.inputs.clear();
+        km.inputs.clear();
+    }
+
+    for (unsigned i = 0; i < n_outputs; i++) {
+        km.outputs.clear();
+        km.outputs.clear();
+    }
+
+    return;
 }

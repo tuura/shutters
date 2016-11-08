@@ -21,10 +21,21 @@ typedef struct struct_tag3 {
     string initial;
 } net_type;
 
+typedef struct struct_tag4 {
+    string         name;
+    vector<int>    marking;
+} signal_type;
+
+typedef struct struct_tag5 {
+    vector<signal_type> inputs;
+    vector<signal_type> outputs;
+} espresso_format;
+
 // Global variables
 extern string espresso_path;
 extern string marking_path;
 extern net_type network;
 extern vector<window_type> windows;
+extern espresso_format km;
 
 #endif

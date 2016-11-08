@@ -3,7 +3,7 @@ CC =g++
 PROJECT_NAME :=PROCESS-WINDOW
 
 # Compilation and linking flags.
-CC_FLAGS = -c -MMD -MP -O3 -m32 -Wall
+CC_FLAGS = -c -MMD -MP -O3 -m32 -Wall -std=c++0x
 LD_FLAGS = -m32 -static
 
 # Target 

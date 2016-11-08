@@ -15,6 +15,7 @@
 string marking_path;
 net_type network;
 vector<window_type> windows;
+espresso_format km;
 
 // Main function
 int main(int argc, char** argv) {
