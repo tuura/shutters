@@ -64,6 +64,7 @@ w2 = (w1p3&!w1p4);
 ```
 
 ```text
+===> buck
 Wakeup marking conditions for Window 1:
 w1p1 = 1;
 Wakeup marking conditions for Window 2:
