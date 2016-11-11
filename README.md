@@ -1,5 +1,5 @@
 # Wake-up equations for Process-windows
-This plugin reads 
+This plugin reads `markings` extension files (`process-windows` application), and generate the wakeup marking conditions for the places and for the windows present, using `Espresso` logic minimizer.
 
 ### How to install the tool
 Clone the repository and run the Makefile.
