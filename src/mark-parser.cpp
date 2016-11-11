@@ -39,12 +39,25 @@ int read_transitions(ifstream& file) {
             break;
         }
 
+        insert_state(word);
         network.source.push_back(word);
         file >> word;
         network.arc.push_back(word);
         file >> word;
+        insert_state(word);
         network.dest.push_back(word);
 
+    }
+
+    return 0;
+}
+
+// Insert state into the set of all states
+int insert_state(string word) {
+
+    if ( state_exist_set(word, states) == -1) {
+        states.push_back(word);
+        return 1;
     }
 
     return 0;

@@ -17,5 +17,6 @@ unsigned place_index(vector<string>, string);
 void print_structure();
 void print_transitions();
 void print_windows();
+int insert_state(string);
 
 #endif

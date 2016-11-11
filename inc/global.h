@@ -29,18 +29,23 @@ typedef struct struct_tag4 {
 typedef struct struct_tag5 {
     vector<signal_type> inputs;
     vector<signal_type> outputs;
+    vector<string>      states_in;
+    vector<string>      states_out;
+    int left;
+    int right;
 } espresso_format;
 
 // Global variables
-extern string espresso_path;
-extern string marking_path;
-extern net_type network;
-extern vector<window_type> windows;
-extern espresso_format km;
 #if defined(__linux) || defined(__APPLE__)
     extern char tmp_path[];
 #else
 	extern char tmp_path[FILENAME_MAX];
 #endif
+extern string espresso_path;
+extern string marking_path;
+extern net_type network;
+extern vector<window_type> windows;
+extern vector<espresso_format> kmw;
+extern vector<string> states;
 
 #endif

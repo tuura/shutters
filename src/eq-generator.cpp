@@ -10,13 +10,34 @@ int generate_wakeup_conditions() {
     create_tmp_filename(tmp_path);
 
     if ( generate_marking_conditions() ) {
-        fprintf(stderr, "Error on the generation of the marking conditions.\n");
+        fprintf(stderr, "Error on the generation of the marking conditions\n");
         rm_tmp_file(tmp_path);
         return -1;
     }
 
-    // generate_windows_conditions();
+    if ( generate_window_conditions() ) {
+        fprintf(stderr, "Error on the generation of the window wakeup conditions\n");
+        rm_tmp_file(tmp_path);
+        return -1;
+    }
+
     rm_tmp_file(tmp_path);
+
+    return 0;
+}
+
+// Generate wakeup window conditions of all the windows
+int generate_window_conditions() {
+
+    unsigned n_windows = windows.size();
+
+    for (unsigned i = 0; i < n_windows; i++) {
+        if ( generate_window_condition(i) ) {
+            fprintf(stderr, "Error on generating wakeup conditions\
+                             for the Window %d\n", i+1);
+            return -1;
+        }
+    }
 
     return 0;
 }
@@ -27,8 +48,7 @@ int generate_marking_conditions() {
     unsigned n_windows = windows.size();
 
     for (unsigned i = 0; i < n_windows; i++) {
-        if ( generate_marking_window(i) ) {
-            rm_tmp_file(tmp_path);
+        if ( generate_marking_condition(i) ) {
             fprintf(stderr, "Error on generating marking conditions\
                              for the Window %d\n", i+1);
             return -1;
@@ -38,23 +58,26 @@ int generate_marking_conditions() {
     return 0;
 }
 
-// Generate wakeup marking conditions of one windows
-int generate_marking_window(unsigned wi) {
+// Generate wake window condition of one window
+int generate_window_condition(unsigned wi) {
 
-    vector<string> woken_states = find_woken_states(wi);
     unsigned n_windows = windows.size();
-    unsigned n_woken_states = woken_states.size();
-    clear_karnaugh_map();
+    kmw.clear();
 
-    for (unsigned i = 0; i < n_woken_states; i++) {
-        for (unsigned j = 0; j < n_windows; j++) {
+    for (unsigned i = 0; i < n_windows; i++) {
+        if ( wi != i ) {
+            vector<string> woken_states = find_woken_states_between_windows(wi, i);
 
-            int si = state_exist_window(woken_states[i], j);
-
-            if ( wi != j && si != -1 ) {
-                push_back_signals(&km.inputs, (unsigned)si, j);
-            } else if ( wi == j ) {
-                push_back_signals(&km.outputs, (unsigned)si, j);
+            if ( !woken_states.empty() ) {
+                espresso_format kmt;
+                kmt.inputs = push_back_inputs_window(woken_states, i);
+                kmt.outputs = push_back_output_window(woken_states, wi, i);
+                unsigned n_states = windows[i].states.size();
+                for (unsigned j = 0; j < n_states; j++) {
+                    kmt.states_in.push_back(windows[i].states[j].name);
+                    kmt.states_out.push_back(windows[i].states[j].name);
+                }
+                kmw.push_back(kmt);
             }
 
         }
@@ -65,51 +88,93 @@ int generate_marking_window(unsigned wi) {
         return -1;
     }
 
-    cout << "Wakeup marking conditions for Window " << wi+1 << ":\n";
+    cout << "Wakeup condition for Window " << wi+1 << ":" << "\n";
     run_espresso((char*)espresso_path.c_str(), tmp_path);
 
     return 0;
 }
 
-// Write Karnaugh map in Espresso format
-int write_karnaugh_map(char* tmp_path) {
 
-    FILE *fp = NULL;
-    int n_inputs = (int) km.inputs.size();
-    int n_outputs = (int) km.outputs.size();
+// Accumulate all the inputs related to wake up window condition into
+// the set for Espresso format
+vector<signal_type> push_back_inputs_window(vector<string> active_states, unsigned wi) {
 
-    if ( (fp = fopen(tmp_path, "w")) == NULL) {
-        fprintf(stderr, "Error opening the temporary file\n");
+    unsigned n_places = windows[wi].places.size();
+    unsigned n_states = windows[wi].states.size();
+    vector<signal_type> inputs;
+
+    // Add input names
+    for (unsigned i = 0; i < n_places; i++) {
+        string name_input = name_place_in_window(wi, i);
+
+        // Add input marking
+        for (unsigned j = 0; j < n_states; j++) {
+            add_signal(&inputs, name_input, j, wi, i);
+        }
+    }
+
+    return inputs;
+}
+
+// Accumulate all the outputs related to wake up window condition into
+// the set for Espresso format
+vector<signal_type> push_back_output_window( vector<string> woken_states,\
+                                             unsigned wi, unsigned si) {
+
+    unsigned n_states = windows[si].states.size();
+    signal_type signal;
+    int sig_index;
+    string out_name = "w" + to_string(wi+1);
+    vector<signal_type> outputs;
+
+    for (unsigned i = 0; i < n_states; i++) {
+        int val = state_exist_set(windows[si].states[i].name, woken_states) != -1 ? 1:0;
+        if ( (sig_index = signal_exist(out_name, outputs)) == -1 ) {
+            signal.name = out_name;
+            signal.marking.push_back(val);
+            outputs.push_back(signal);
+        } else {
+            outputs[(unsigned)sig_index].marking.push_back(val);
+        }
+    }
+
+    return outputs;
+}
+
+// Generate wakeup marking conditions of one windows
+int generate_marking_condition(unsigned wi) {
+
+    vector<string> woken_states = find_all_woken_states(wi);
+    unsigned n_windows = windows.size();
+    unsigned n_woken_states = woken_states.size();
+    kmw.clear();
+
+    for (unsigned i = 0; i < n_woken_states; i++) {
+        for (unsigned j = 0; j < n_windows; j++) {
+            espresso_format kmt;
+
+            int si = state_exist_window(woken_states[i], j);
+
+            if ( wi != j && si != -1 ) {
+                push_back_signals(&kmt.inputs, (unsigned)si, j);
+                kmt.states_in.push_back(windows[j].states[si].name);
+            } else if ( wi == j ) {
+                push_back_signals(&kmt.outputs, (unsigned)si, j);
+                kmt.states_out.push_back(windows[wi].states[si].name);
+            }
+        
+            if( !kmt.states_in.empty() || !kmt.states_out.empty())
+            kmw.push_back(kmt);
+        }
+    }
+
+    if ( write_karnaugh_map(tmp_path) ) {
+        fprintf(stderr, "Error on writing the Karnaugh map\n");
         return -1;
     }
 
-    fprintf(fp, ".type fr\n");
-    fprintf(fp, ".i %d\n", n_inputs);
-    fprintf(fp, ".o %d\n", n_outputs);
-    fprintf(fp, ".ilb ");
-    for (unsigned i = 0; i < (unsigned) n_inputs; i++) {
-        fprintf(fp, "%s ", km.inputs[i].name.c_str());
-    }
-    fprintf(fp, "\n");
-    fprintf(fp, ".ob ");
-    for (unsigned i = 0; i < (unsigned) n_outputs; i++) {
-        fprintf(fp, "%s ", km.outputs[i].name.c_str());
-    }
-    fprintf(fp, "\n");
-    unsigned n_marking = km.inputs[0].marking.size();
-    for (unsigned j = 0; j < n_marking; j++) {
-        for (unsigned i = 0; i < (unsigned) n_inputs; i++) {
-            fprintf(fp, "%d", km.inputs[i].marking[j]);
-        }
-        fprintf(fp, " ");
-        for (unsigned i = 0; i < (unsigned) n_outputs; i++) {
-            fprintf(fp, "%d", km.outputs[i].marking[j]);
-        }
-        fprintf(fp, "\n");
-    }
-    fprintf(fp, ".e");
-
-    fclose(fp);
+    cout << "Wakeup marking conditions for Window " << wi+1 << ":" << "\n";
+    run_espresso((char*)espresso_path.c_str(), tmp_path);
 
     return 0;
 }
@@ -121,11 +186,16 @@ void push_back_signals(vector<signal_type> *sig, unsigned si, unsigned wi) {
 
     // Copy input names and markings
     for (unsigned i = 0; i < n_places; i++) {
-        string name_input = "w" + to_string(wi+1) + windows[wi].places[i];
+        string name_input = name_place_in_window(wi, i);
         add_signal(sig, name_input, si, wi, i);
     }
 
     return;
+}
+
+// Create input name attaching number of the window and the name of the place
+string name_place_in_window(unsigned wi, unsigned pi) {
+    return ("w" + to_string(wi+1) + windows[wi].places[pi]);
 }
 
 // Add signal into the set for the wakeup condition generation
@@ -174,7 +244,7 @@ int is_marked(unsigned pi, state_type s) {
 }
 
 // Find states which need wakeup Boolean conditions
-vector<string> find_woken_states(unsigned wi) {
+vector<string> find_all_woken_states(unsigned wi) {
     
     vector<string> woken_states;
     unsigned n_states = windows[wi].states.size();
@@ -186,7 +256,30 @@ vector<string> find_woken_states(unsigned wi) {
 
         for (unsigned k = 0; k < n_sources; k++) {
             if ( state_exist_window(sources[k], wi) == -1 &&
-                 !state_exist_set(windows[wi].states[j].name, woken_states) ) {
+                 state_exist_set(windows[wi].states[j].name, woken_states) == -1 ) {
+                woken_states.push_back(windows[wi].states[j].name);
+            }
+        }
+    }
+
+    return woken_states;
+}
+
+// Find states which need wakeup Boolean conditions between two windows
+vector<string> find_woken_states_between_windows(unsigned wi, unsigned di) {
+    
+    vector<string> woken_states;
+    unsigned n_states = windows[wi].states.size();
+
+    for (unsigned j = 0; j < n_states; j++) {
+
+        vector<string> sources = find_source_states(windows[wi].states[j].name);
+        unsigned n_sources = sources.size();
+
+        for (unsigned k = 0; k < n_sources; k++) {
+            if ( state_exist_window(sources[k], wi) == -1 &&
+                 state_exist_window(sources[k], di) != -1 &&
+                 state_exist_set(windows[wi].states[j].name, woken_states) == -1 ) {
                 woken_states.push_back(windows[wi].states[j].name);
             }
         }
@@ -201,11 +294,11 @@ int state_exist_set(string state_name, vector<string> set) {
 
     for (unsigned i = 0; i < ncs; i++) {
         if ( !state_name.compare(set[i]) ) {
-            return 1;
+            return i;
         }
     }
 
-    return 0;
+    return -1;
 }
 
 // Does the state exist in the window with index 'wi'?
@@ -260,23 +353,231 @@ int run_espresso(char* espresso_path, char* karnaugh_map) {
 	return 0;
 }
 
-// Clear Karnaugh map saved for the generation of the conditions
-void clear_karnaugh_map() {
+// Write Karnaugh map for marking conditions in Espresso format
+int write_karnaugh_map(char* tmp_path) {
 
-    unsigned n_inputs = km.inputs.size();
-    unsigned n_outputs = km.outputs.size();
+    FILE *fp = NULL;
+    vector<string> inputs;
+    vector<string> outputs;
+    int n_inputs = count_inputs(&inputs);
+    int n_outputs = count_outputs(&outputs);
 
-    for (unsigned i = 0; i < n_inputs; i++) {
-        km.inputs.clear();
-        km.inputs.clear();
+    if ( (fp = fopen(tmp_path, "w")) == NULL) {
+        fprintf(stderr, "Error opening the temporary file\n");
+        return -1;
     }
 
-    for (unsigned i = 0; i < n_outputs; i++) {
-        km.outputs.clear();
-        km.outputs.clear();
+    fprintf(fp, ".type fr\n");
+    fprintf(fp, ".i %d\n", n_inputs);
+    fprintf(fp, ".o %d\n", n_outputs);
+    fprintf(fp, ".ilb ");
+    for (unsigned i = 0; i < (unsigned) n_inputs; i++) {
+        fprintf(fp, "%s ", inputs[i].c_str());
+    }
+    fprintf(fp, "\n");
+    fprintf(fp, ".ob ");
+    for (unsigned i = 0; i < (unsigned) n_outputs; i++) {
+        fprintf(fp, "%s ", outputs[i].c_str());
+    }
+    fprintf(fp, "\n");
+
+    write_marking(fp, inputs, n_inputs, outputs, n_outputs);
+
+    fprintf(fp, ".e");
+
+    fclose(fp);
+
+    return 0;
+}
+
+// Set the range of the inputs within the inputs in the Karnaugh Map
+void limit_input(vector<string> inputs, unsigned n_in) {
+
+    unsigned n_km = kmw.size();
+    int l;
+    int r;
+
+    for (unsigned w = 0; w < n_km; w++) {
+        if ( kmw[w].states_in.empty() ) {
+            continue;
+        }
+
+        unsigned last_el = kmw[w].inputs.size() - 1;
+        l = 0;
+        r = 0;
+
+        for (unsigned i = 0; i < n_in && (!l || !r); i++) {
+            if ( !l && !kmw[w].inputs[0].name.compare(inputs[i]) ) {
+                kmw[w].left = i;
+                l = 1;
+                continue;
+            }
+
+            if ( !r && !kmw[w].inputs[last_el].name.compare(inputs[i]) ) {
+                kmw[w].right = i;
+                r = 1;
+                continue;
+            }
+        }
     }
 
     return;
+}
+
+// Write inputs and output values inside the Karnaugh map for Espresso
+void write_marking(FILE *fp, vector<string> inputs, int n_in,\
+                   vector<string> outputs, int n_out) {
+
+    unsigned n_states = states.size();
+
+    limit_input(inputs, (unsigned) n_in);
+
+    for (unsigned s = 0; s < n_states; s++) {
+
+        if ( state_exist_km(states[s]) == -1 ) {
+            continue;
+        }
+
+        write_inputs_km(fp, n_in, s);
+        fprintf(fp," ");
+        write_outputs_km(fp, n_out, s);
+        fprintf(fp,"\n");
+    }
+
+    return;
+}
+
+// Write inputs signals inside the Karnaugh map
+void write_inputs_km(FILE *fp, int n_in, unsigned s) {
+
+    int m;
+    int dc;
+    int cin = 0;
+    unsigned n_km = kmw.size();
+
+    // Inputs
+    while ( cin < n_in ) {
+
+        // Active values
+        for (unsigned w = 0; w < n_km && cin < n_in; w++) {
+
+            if ( kmw[w].states_in.empty() || \
+               ( cin < kmw[w].left || cin > kmw[w].right ) || \
+               ( m = state_exist_set(states[s], kmw[w].states_in) ) == -1 ) {
+                continue;
+            }
+
+            cin += print_signal_values(fp, kmw[w].inputs, m);
+
+        }
+
+        // DC values
+        dc = 0;
+        for (unsigned w = 0; w < n_km && cin < n_in && !dc; w++) {
+
+            if ( kmw[w].states_in.empty() || \
+               ( cin < kmw[w].left || cin > kmw[w].right ) ) {
+                continue;
+            }
+
+            unsigned n_inputs = kmw[w].inputs.size();
+            for (unsigned i = 0; i < n_inputs; i++) {
+                fprintf(fp, "-");
+            }
+            cin += n_inputs;
+            dc = 1;
+        }
+    }
+
+    return;
+}
+
+// Write inputs signals inside the Karnaugh map
+void write_outputs_km(FILE *fp, int n_out, unsigned s) {
+
+    int cout = 0;
+    int m;
+    unsigned n_km = kmw.size();
+
+    for (unsigned w = 0; w < n_km && cout < n_out; w++) {
+        if ( kmw[w].states_out.empty() || \
+           ( m = state_exist_set(states[s], kmw[w].states_out) ) == -1 ) {
+            continue;
+        }
+
+        cout += print_signal_values(fp, kmw[w].outputs, m);
+    }
+
+    return;
+}
+
+// Print the signal values in the Karnaugh map
+int print_signal_values(FILE *fp, vector<signal_type> signals, int mark_i) {
+
+    unsigned n_signals = signals.size();
+
+    for (unsigned i = 0; i < n_signals; i++) {
+        fprintf(fp, "%d", signals[i].marking[(unsigned)mark_i]);
+    }
+
+    return (int)n_signals;
+}
+
+// Does the state exist in the Karnaugh maps stored?
+int state_exist_km(string state) {
+
+    unsigned n_km = kmw.size();
+    int index;
+    
+    for (unsigned w = 0; w < n_km; w++) {
+        if( !kmw[w].states_in.empty() ) {
+            if ( (index = state_exist_set(state, kmw[w].states_in)) != -1 ) {
+                return index;
+            }
+        }
+    }
+
+    return -1;
+}
+
+// Count and list the input signals
+int count_inputs(vector<string> *inputs) {
+
+    unsigned n_km = kmw.size();
+    int n = 0;
+
+    for (unsigned w = 0; w < n_km; w++ ) {
+        unsigned n_inputs = kmw[w].inputs.size();
+        for (unsigned i = 0; i < n_inputs; i++) {
+            if ( state_exist_set(kmw[w].inputs[i].name, (*inputs)) == -1 ) {
+                (*inputs).push_back(kmw[w].inputs[i].name);
+            }
+        }
+    }
+
+    n = (int) (*inputs).size();
+
+    return n;
+}
+
+// Count and list the output signals
+int count_outputs(vector<string> *outputs) {
+
+    unsigned n_km = kmw.size();
+    int n = 0;
+
+    for (unsigned w = 0; w < n_km; w++ ) {
+        unsigned n_outputs = kmw[w].outputs.size();
+        for (unsigned i = 0; i < n_outputs; i++) {
+            if ( state_exist_set(kmw[w].outputs[i].name, (*outputs)) == -1 ) {
+                (*outputs).push_back(kmw[w].outputs[i].name);
+            }
+        }
+    }
+
+    n = (int) (*outputs).size();
+
+    return n;
 }
 
 // Print signals
@@ -285,10 +586,10 @@ void print_signals(vector<signal_type> sigs) {
     unsigned n_sigs = sigs.size();
 
     for (unsigned i = 0; i < n_sigs; i++) {
-        cout << km.inputs[i].name << ": ";
+        cout << sigs[i].name << ": ";
         unsigned n_marking = sigs[i].marking.size();
         for (unsigned j = 0; j < n_marking; j++) {
-            cout << km.inputs[i].marking[j] << " ";
+            cout << sigs[i].marking[j] << " ";
         }
         cout << "\n";
     }
