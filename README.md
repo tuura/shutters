@@ -1,5 +1,5 @@
 # Wake-up equations for Process-windows
-This plugin reads `markings` extension files (`process-windows` application), and generate the wakeup marking conditions for the places and for the windows present, using `Espresso` logic minimizer.
+This tool reads `markings` extension files (produced by a process windows mining tool), and generates the wakeup condition for each window, as well as the wakeup marking conditions for the places in each window. The tool uses `espresso` logic minimizer for synthesis of the obtained conditions.
 
 ### How to install the tool
 Clone the repository and run the Makefile.
@@ -16,7 +16,7 @@ $ ./wakeup-eq [file.markings] -e [espresso_path]
 Run `./wakeup-eq --help` for the help of the tool.
 
 ### Results
-The followind equations have been obtained by running the tool over the files contained inside the `/test` directory. `buck.marking` models the buck controller, the others are the FSMs depicted in the figures of the `Process Windows` article. Notice: the missing places in the wakeup marking conditions are calculated to be not marked (`0` condition).
+The followind equations have been obtained by running the tool over the files contained inside the `/test` directory. `buck.marking` models the buck controller, the others are the FSMs depicted in the figures of the `Process Windows` article. Note: the places whose wakeup marking conditions are `0` are not shown for brevity. A place `pN` in window `M` is referred to as `wMpN`.
 
 #### fig1
 ```text
