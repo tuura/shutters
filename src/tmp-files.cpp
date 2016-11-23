@@ -63,6 +63,30 @@ int rm_tmp_file(char* tmp_name) {
 	return 0;
 }
 
+// Create all temporary files
+void create_tmp_files() {
+
+    create_tmp_filename(pla_path);
+    create_tmp_filename(espresso_result_path);
+    create_tmp_filename(abc_script_path);
+    create_tmp_filename(abc_equations_path);
+    create_tmp_filename(abc_result_path);
+
+    return;
+}
+
+// Remove all temporary files
+void remove_tmp_files() {
+
+    rm_tmp_file(pla_path);
+    rm_tmp_file(espresso_result_path);
+    rm_tmp_file(abc_script_path);
+    rm_tmp_file(abc_equations_path);
+    rm_tmp_file(abc_result_path);
+
+    return;
+}
+
 // Check file existance
 int file_exist(char *tmp_name) {
 	FILE *fp = fopen(tmp_name, "r");

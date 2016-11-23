@@ -6,12 +6,21 @@
 
 // Global variables
 #if defined(__linux) || defined(__APPLE__)
-	string espresso_path("espresso");
-	char tmp_path[] = "/tmp/karnaugh-map.XXXXXX";
+    string espresso_path("espresso");
+	char pla_path[] = "/tmp/pla.XXXXXX";
+    char espresso_result_path[] = "/tmp/esp_res.XXXXXX";
+    char abc_script_path[] = "/tmp/abc_script.XXXXXX";
+    char abc_equations_path[] = "/tmp/abc_eqs.XXXXXX";
+    char abc_result_path[] = "/tmp/abc_result.XXXXXX";
 #else
-	string espresso_path("espresso.exe");
-	char tmp_path[FILENAME_MAX];
+    string espresso_path("espresso.exe");
+	char pla_path[FILENAME_MAX];
+    char espresso_result_path[FILENAME_MAX];
+    char abc_script_path[FILENAME_MAX];
+    char abc_equations_path[FILENAME_MAX];
+    char abc_result_path[FILENAME_MAX];
 #endif
+string abc_path;
 string marking_path;
 net_type network;
 vector<window_type> windows;

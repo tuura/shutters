@@ -18,11 +18,13 @@ int state_exist_km(string);
 int is_marked(unsigned, state_type);
 int signal_exist(string, vector<signal_type>);
 int run_espresso_on_km(string);
-int run_espresso(char*, char*);
+int run_espresso(char*, char*, char*);
 int write_karnaugh_map(char*);
 int count_inputs(vector<string>*);
 int count_outputs(vector<string>*);
 int print_signal_values(FILE*, vector<signal_type>, int);
+
+char* replace_zeros_ones(char*);
 
 void push_back_signals(vector<signal_type>*, unsigned, unsigned);
 void add_signal(vector<signal_type>*, string, unsigned, unsigned, unsigned);
@@ -37,6 +39,7 @@ string name_place_in_window(unsigned, unsigned);
 vector<string> find_all_woken_states(unsigned);
 vector<string> find_woken_states_between_windows(unsigned, unsigned);
 vector<string> find_source_states(string);
+vector<string> read_equations(char*);
 
 vector<signal_type> push_back_output_window(vector<string>, unsigned, unsigned);
 vector<signal_type> push_back_inputs_window(vector<string>, unsigned);

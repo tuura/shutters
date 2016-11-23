@@ -18,16 +18,19 @@
     #include "mark-parser.h"
     #include "tmp-files.h"
     #include "eq-generator.h"
+    #include "eq-refactoring.h"
 #else
     #include "PATH\global.h"
     #include "PATH\par-parser.h"
     #include "PATH\mark-parser.h"
     #include "PATH\tmp-files.h"
     #include "PATH\eq-generator.h"
+    #include "PATH\eq-refactoring.h"
 #endif
 
 // Key-words defines
-#define ESPRESSO_OPTIONS    "-D so -o eqntott"
+//#define ESPRESSO_OPTIONS    "-D so -o eqntott"
+#define ESPRESSO_OPTIONS    "-D qm -o eqntott"
 #define TRANSITIONS         ".transitions"
 #define INITIAL             ".initial"
 #define WINDOW              ".window"

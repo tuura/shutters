@@ -7,21 +7,21 @@
 // Generate wakeup marking and window conditions
 int generate_wakeup_conditions() {
 
-    create_tmp_filename(tmp_path);
+    create_tmp_files();
 
     if ( generate_marking_conditions() ) {
         fprintf(stderr, "Error on the generation of the marking conditions\n");
-        rm_tmp_file(tmp_path);
+        remove_tmp_files();
         return -1;
     }
 
     if ( generate_window_conditions() ) {
         fprintf(stderr, "Error on the generation of the window wakeup conditions\n");
-        rm_tmp_file(tmp_path);
+        remove_tmp_files();
         return -1;
     }
 
-    rm_tmp_file(tmp_path);
+    remove_tmp_files();
 
     return 0;
 }
@@ -83,17 +83,110 @@ int generate_window_condition(unsigned wi) {
         }
     }
 
-    if ( write_karnaugh_map(tmp_path) ) {
+    if ( write_karnaugh_map(pla_path) ) {
         fprintf(stderr, "Error on writing the Karnaugh map\n");
         return -1;
     }
 
+    run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+
+    vector<string> equations = read_equations(espresso_result_path);
+
     cout << "Wakeup condition for Window " << wi+1 << ":" << "\n";
-    run_espresso((char*)espresso_path.c_str(), tmp_path);
+    if ( abc_path.empty() ) {
+        unsigned n_eqs = equations.size();
+        for (unsigned i = 0; i < n_eqs; i++) {
+            cout << equations[i] << "\n";
+        }
+
+        return 0;
+    }
+
+    if ( refactorize_equations(equations) ) {
+        fprintf(stderr, "Error refactorizing equations with ABC\n");
+        return -1;
+    }
 
     return 0;
 }
 
+// Read Espresso generated equations and modify them using the Synopsys format for ABC
+vector<string> read_equations(char *file_eq) {
+
+    vector<string> eqs;
+    FILE *fp = NULL;
+    char c;
+
+    if ( (fp = fopen(file_eq, "r")) == NULL ) {
+        eqs.push_back("No equations found");
+        return eqs;
+    }
+    
+    while ( (c = fgetc(fp)) != EOF ) {
+
+        if ( c == '\n' ) {
+            continue;
+        }
+
+        char *eq;
+        eq = strdup("");
+        eq = cat_char(eq, c);
+
+        while ( (c = fgetc(fp)) != ';' ) {
+
+            switch (c) {
+                case '|':
+                    eq = cat_char(eq, '+');
+                    break;
+                case '&':
+                    eq = cat_char(eq, '*');
+                    break;
+                default:
+                    eq = cat_char(eq, c);
+            }
+        }
+        eq = cat_char(eq, c);
+        eq = replace_zeros_ones(eq);
+
+        eqs.push_back(eq);
+    }
+
+    fclose(fp);    
+
+    return eqs;
+}
+
+// Replaces "();" with '1' and ';' with '0'
+char* replace_zeros_ones(char* eq) {
+
+    char *new_eq;
+    int i = 0;
+
+    new_eq = (char *) malloc(sizeof(char) * (strlen(eq) + 1) );
+
+    while ( eq[i] != '=' ) {
+        new_eq[i] = eq[i];
+        i++;
+    }
+    new_eq[i++] = '=';
+    new_eq[i++] = ' ';
+
+    if ( eq[i] == '(' && eq[i+1] == ')' ) {
+        new_eq[i] = '1';
+        new_eq[++i] = ';';
+        new_eq[++i] = '\0';
+    } else if ( eq[i] == ';' ) {
+        new_eq[i] = '0';
+        new_eq[++i] = ';';
+        new_eq[++i] = '\0';
+    } else {
+        free(new_eq);
+        new_eq = strdup(eq);
+    }
+    
+    free(eq);
+    return new_eq;
+}
 
 // Accumulate all the inputs related to wake up window condition into
 // the set for Espresso format
@@ -168,13 +261,29 @@ int generate_marking_condition(unsigned wi) {
         }
     }
 
-    if ( write_karnaugh_map(tmp_path) ) {
+    if ( write_karnaugh_map(pla_path) ) {
         fprintf(stderr, "Error on writing the Karnaugh map\n");
         return -1;
     }
 
+    run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+
+    vector<string> equations = read_equations(espresso_result_path);
+
     cout << "Wakeup marking conditions for Window " << wi+1 << ":" << "\n";
-    run_espresso((char*)espresso_path.c_str(), tmp_path);
+    if ( abc_path.empty() ) {
+        unsigned n_eqs = equations.size();
+        for (unsigned i = 0; i < n_eqs; i++) {
+            cout << equations[i] << "\n";
+        }
+
+        return 0;
+    }
+
+    if ( refactorize_equations(equations) ) {
+        fprintf(stderr, "Error refactorizing equations with ABC\n");
+        return -1;
+    }
 
     return 0;
 }
@@ -330,7 +439,7 @@ vector<string> find_source_states(string state_name) {
 }
 
 // Run Espresso logic minimizer over a karnaugh map
-int run_espresso(char* espresso_path, char* karnaugh_map) {
+int run_espresso(char* espresso_path, char* karnaugh_map, char* result_path) {
 
 	char *command;
 
@@ -341,6 +450,9 @@ int run_espresso(char* espresso_path, char* karnaugh_map) {
 	command = cat_strings(command, (char*) ESPRESSO_OPTIONS);
 	command = cat_char(command, ' ');
 	command = cat_strings(command, karnaugh_map);
+    command = cat_strings(command, (char*) " > ");
+    command = cat_strings(command, result_path);
+    command = cat_strings(command, (char*) " 2>&1");
 
     // Run Espresso
     if ( system(command) == -1 ) {
@@ -354,7 +466,7 @@ int run_espresso(char* espresso_path, char* karnaugh_map) {
 }
 
 // Write Karnaugh map for marking conditions in Espresso format
-int write_karnaugh_map(char* tmp_path) {
+int write_karnaugh_map(char* pla_path) {
 
     FILE *fp = NULL;
     vector<string> inputs;
@@ -362,7 +474,7 @@ int write_karnaugh_map(char* tmp_path) {
     int n_inputs = count_inputs(&inputs);
     int n_outputs = count_outputs(&outputs);
 
-    if ( (fp = fopen(tmp_path, "w")) == NULL) {
+    if ( (fp = fopen(pla_path, "w")) == NULL) {
         fprintf(stderr, "Error opening the temporary file\n");
         return -1;
     }

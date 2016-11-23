@@ -12,5 +12,7 @@ int rm_tmp_file(char*);
 int file_exist(char*);
 char* cat_strings(char*, char*);
 char* cat_char(char*, char);
+void create_tmp_files();
+void remove_tmp_files();
 
 #endif

@@ -19,6 +19,7 @@ int parse_arg(int argc, char *argv[]) {
     while (cur < argc) {
 
         if ( parse_espresso(cur, argc, argv) )  return -1;
+        if ( parse_abc(cur, argc, argv) )       return -1;
         if ( parse_help(cur, argc, argv) )      return -1;
         if ( parse_version(cur, argc, argv) )   return -1;
 
@@ -36,6 +37,21 @@ int parse_espresso(int i, int argc, char **argv) {
             espresso_path = argv[i+1];
 		} else {
 			printf("After -e, Espresso logic minimizer path must be introduced.\n");
+			return -1;
+        }
+	}
+
+    return 0;
+}
+
+// Parse -a ABC Path
+int parse_abc(int i, int argc, char **argv) {
+
+    if ( !strcmp(argv[i], "-a") ) {
+		if ( i+1 < argc ) {
+            abc_path = argv[i+1];
+		} else {
+			printf("After -a, ABC path must be introduced.\n");
 			return -1;
         }
 	}
@@ -81,7 +97,8 @@ void print_usage(char **argv) {
 
     printf("Usage:\t%s marking_file_path\n", argv[0]);
     printf("Options available:\n");
-    printf("\t-e espresso_path:\tspecify Espresso logic minimizer absolute path\n");
+    printf("\t-a ABC_path:\t\tspecify ABC path\n");
+    printf("\t-e Espresso_path:\tspecify Espresso logic minimizer path\n");
     printf("\t-h or --help:\t\tprint help of the tool\n");
     printf("\t-v or --version:\tprint tool version\n");
 
