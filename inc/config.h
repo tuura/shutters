@@ -29,8 +29,8 @@
 #endif
 
 // Key-words defines
-//#define ESPRESSO_OPTIONS    "-D so -o eqntott"
-#define ESPRESSO_OPTIONS    "-D qm -o eqntott"
+#define ESPRESSO_OPTIONS    "-D so -o eqntott"
+//#define ESPRESSO_OPTIONS    "-D qm -o eqntott"
 #define TRANSITIONS         ".transitions"
 #define INITIAL             ".initial"
 #define WINDOW              ".window"
