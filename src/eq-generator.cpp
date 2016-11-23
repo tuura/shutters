@@ -64,6 +64,7 @@ int generate_window_condition(unsigned wi) {
     unsigned n_windows = windows.size();
     kmw.clear();
 
+
     for (unsigned i = 0; i < n_windows; i++) {
         if ( wi != i ) {
             vector<string> woken_states = find_woken_states_between_windows(wi, i);
@@ -91,6 +92,7 @@ int generate_window_condition(unsigned wi) {
     run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
 
     vector<string> equations = read_equations(espresso_result_path);
+
 
     cout << "Wakeup condition for Window " << wi+1 << ":" << "\n";
     if ( abc_path.empty() ) {
@@ -265,7 +267,7 @@ int generate_marking_condition(unsigned wi) {
         fprintf(stderr, "Error on writing the Karnaugh map\n");
         return -1;
     }
-
+    
     run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
 
     vector<string> equations = read_equations(espresso_result_path);

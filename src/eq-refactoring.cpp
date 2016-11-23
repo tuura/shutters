@@ -126,13 +126,15 @@ vector<string> read_equations_abc() {
 	
 	fp = fopen(abc_result_path, "r");
 
-    // throw away first line
+    // Throw away first line
     while( (c = fgetc(fp)) != '\n');
-	// throw away input and output lines
+
+	// Throw away input and output lines
 	for(int i = 0; i < 2; i++){
 		while( (c = fgetc(fp)) != ';');
 	}
 
+    // Read equations
     while ( (c = fgetc(fp)) != EOF ) {
 
         if ( c == ' ' || c == '\n' ) {
