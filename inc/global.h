@@ -38,12 +38,16 @@ typedef struct struct_tag5 {
 // Global variables
 #if defined(__linux) || defined(__APPLE__)
     extern char pla_path[];
+    extern char pla_path_back[];
+    extern char pla_path_copy[];
     extern char espresso_result_path[];
     extern char abc_script_path[];
     extern char abc_equations_path[];
     extern char abc_result_path[];
 #else
 	extern char pla_path[FILENAME_MAX];
+	extern char pla_path_back[FILENAME_MAX];
+	extern char pla_path_copy[FILENAME_MAX];
     extern char espresso_result_path[FILENAME_MAX];
     extern char abc_script_path[FILENAME_MAX];
     extern char abc_equations_path[FILENAME_MAX];
@@ -56,5 +60,6 @@ extern net_type network;
 extern vector<window_type> windows;
 extern vector<espresso_format> kmw;
 extern vector<string> states;
+extern int positive_mode;
 
 #endif

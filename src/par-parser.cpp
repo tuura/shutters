@@ -22,6 +22,7 @@ int parse_arg(int argc, char *argv[]) {
         if ( parse_abc(cur, argc, argv) )       return -1;
         if ( parse_help(cur, argc, argv) )      return -1;
         if ( parse_version(cur, argc, argv) )   return -1;
+        if ( parse_positive(cur, argc, argv) )  return -1;
 
         cur++;
     }
@@ -54,6 +55,16 @@ int parse_abc(int i, int argc, char **argv) {
 			printf("After -a, ABC path must be introduced.\n");
 			return -1;
         }
+	}
+
+    return 0;
+}
+
+// Parse -p or --positive
+int parse_positive(int i, int argc, char **argv) {
+
+    if ( !strcmp(argv[i], "-p") || !strcmp(argv[i], "--positive") ) {
+        positive_mode = 1;
 	}
 
     return 0;

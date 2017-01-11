@@ -10,6 +10,7 @@
 int create_tmp_filename(char*);
 int rm_tmp_file(char*);
 int file_exist(char*);
+int copy_file(char*, char*);
 char* cat_strings(char*, char*);
 char* cat_char(char*, char);
 void create_tmp_files();
