@@ -111,6 +111,7 @@ void print_usage(char **argv) {
     printf("\t-a ABC_path:\t\tspecify ABC path\n");
     printf("\t-e Espresso_path:\tspecify Espresso logic minimizer path\n");
     printf("\t-h or --help:\t\tprint help of the tool\n");
+    printf("\t-p or --positive:\tforce equations to contain only positive literals\n");
     printf("\t-v or --version:\tprint tool version\n");
 
     return;
