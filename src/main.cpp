@@ -11,6 +11,7 @@
 	char pla_path_back[] = "/tmp/pla_back.XXXXXX";
 	char pla_path_copy[] = "/tmp/pla_copy.XXXXXX";
     char espresso_result_path[] = "/tmp/esp_res.XXXXXX";
+    char espresso_copy_path[] = "/tmp/esp_res_copy.XXXXXX";
     char abc_script_path[] = "/tmp/abc_script.XXXXXX";
     char abc_equations_path[] = "/tmp/abc_eqs.XXXXXX";
     char abc_result_path[] = "/tmp/abc_result.XXXXXX";
@@ -20,6 +21,7 @@
 	char pla_path_back[FILENAME_MAX];
 	char pla_path_copy[FILENAME_MAX];
     char espresso_result_path[FILENAME_MAX];
+    char espresso_copy_path[FILENAME_MAX];
     char abc_script_path[FILENAME_MAX];
     char abc_equations_path[FILENAME_MAX];
     char abc_result_path[FILENAME_MAX];
@@ -31,6 +33,7 @@ vector<window_type> windows;
 vector<espresso_format> kmw;
 vector<string> states;
 int positive_mode = 0;
+int win = 1;
 
 // Main function
 int main(int argc, char** argv) {

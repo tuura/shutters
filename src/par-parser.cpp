@@ -119,7 +119,7 @@ void print_usage(char **argv) {
 // Print version
 void print_version(char **argv) {
 
-    printf("%s v0.1\n", argv[0]);
+    printf("%s v0.2\n", argv[0]);
 
     return;
 }

@@ -268,7 +268,8 @@ int generate_marking_condition(unsigned wi) {
     }
     
     if ( !positive_mode ) {
-    run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+        run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+    }
 
     vector<string> equations = read_equations(espresso_result_path);
 
@@ -285,7 +286,6 @@ int generate_marking_condition(unsigned wi) {
     if ( refactorize_equations(equations) ) {
         fprintf(stderr, "Error refactorizing equations with ABC\n");
         return -1;
-    }
     }
 
     return 0;
@@ -472,6 +472,7 @@ int run_espresso(char* espresso_path, char* karnaugh_map, char* result_path) {
 int write_karnaugh_map(char* pla_path) {
 
     FILE *fp = NULL;
+    FILE *fpc = NULL;
     vector<string> inputs;
     vector<string> outputs;
     int n_inputs = count_inputs(&inputs);
@@ -503,47 +504,49 @@ int write_karnaugh_map(char* pla_path) {
     fclose(fp);
 
     if ( positive_mode && n_outputs == 1) {
+
         force_positive_literals(n_inputs);
+
     } else if ( positive_mode ) {
+
+        if ( (fpc = fopen(espresso_copy_path, "w")) == NULL) {
+            fprintf(stderr, "Error opening the temporary file\n");
+            return -1;
+        }
         
         copy_file(pla_path, pla_path_back);
 
-        cout << "Wakeup marking conditions:\n";
         for (int i = 0; i < n_outputs; i++) {
 
-            if (build_single_pla(i, outputs, n_inputs, n_outputs) != 0) return -1;
+            if ( build_single_pla(i, outputs, n_inputs, n_outputs) != 0 ) {
+                return -1;
+            }
 
             force_positive_literals(n_inputs);
 
             run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
 
             vector<string> equations = read_equations(espresso_result_path);
-            cout << equations[0] << "\n";
-
-            /*cout << "Wakeup marking conditions:" << "\n";
-            if ( abc_path.empty() ) {
-                unsigned n_eqs = equations.size();
-                for (unsigned i = 0; i < n_eqs; i++) {
-                    cout << equations[i] << "\n";
-                }
-
-                return 0;
-            }
-
-            if ( refactorize_equations(equations) ) {
-                fprintf(stderr, "Error refactorizing equations with ABC\n");
-                return -1;
-            }*/
+            fprintf(fpc, "%s\n\n", equations[0].c_str());
+            
         }
+
+        fclose(fpc);
+
+        copy_file(espresso_copy_path, espresso_result_path);
     }
 
     return 0;
 }
 
+// Split a PLA with multiple outputs into a PLA with output addressed by 'index'
 int build_single_pla(int index, vector<string> outputs, int n_inputs, int n_outputs) {
 
-    FILE *fps = NULL, *fpd = NULL;
-    char *inputs, *outs, c;
+    FILE *fps = NULL;
+    FILE *fpd = NULL;
+    char *inputs;
+    char *outs;
+    char c;
     
     inputs = (char*) malloc( sizeof(char) * (n_inputs + 2) );
     outs = (char*) malloc( sizeof(char) * (n_outputs + 2) );
@@ -582,12 +585,14 @@ int build_single_pla(int index, vector<string> outputs, int n_inputs, int n_outp
     return 0;
 }
 
+// Substitute 1 with - in the off-set for forcing equations with positive lits
 void force_positive_literals(int n_inputs) {
 
     char c;
     char output;
     char *inputs;
-    FILE *fp = NULL, *fpd = NULL;
+    FILE *fp = NULL;
+    FILE *fpd = NULL;
     vector<int> lines;
     vector<string> inputs_mod;
     int i = 0;
@@ -621,10 +626,6 @@ void force_positive_literals(int n_inputs) {
         i++;
     }
 
-    /*for (unsigned j = 0; j < lines.size(); j++ ) {
-        cout << lines[j] << " ooo " << inputs_mod[j] << "\n";
-    }*/
-
     fclose(fp);
     free(inputs);
 
@@ -638,7 +639,6 @@ void force_positive_literals(int n_inputs) {
         fputc('\n', fpd);
 	}
 
-    //for (unsigned k = 0; k < lines.size(); k++) cout << lines[k] << " --- " << inputs_mod[k] << "\n";
     if (lines.size() > 0){
         unsigned k = 0;
         for (int j = 0; j < i; j++) {
