@@ -23,6 +23,7 @@ int write_karnaugh_map(char*);
 int count_inputs(vector<string>*);
 int count_outputs(vector<string>*);
 int print_signal_values(FILE*, vector<signal_type>, int);
+int build_single_pla(int, vector<string>, int, int);
 
 char* replace_zeros_ones(char*);
 
@@ -33,6 +34,7 @@ void write_outputs_km(FILE*, int, unsigned);
 void limit_input(vector<string>, unsigned);
 void write_marking(FILE*, vector<string>, int, vector<string>, int);
 void print_signals(vector<signal_type>);
+void force_positive_literals(int);
 
 string name_place_in_window(unsigned, unsigned);
 

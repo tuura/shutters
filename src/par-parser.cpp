@@ -22,6 +22,7 @@ int parse_arg(int argc, char *argv[]) {
         if ( parse_abc(cur, argc, argv) )       return -1;
         if ( parse_help(cur, argc, argv) )      return -1;
         if ( parse_version(cur, argc, argv) )   return -1;
+        if ( parse_positive(cur, argc, argv) )  return -1;
 
         cur++;
     }
@@ -54,6 +55,16 @@ int parse_abc(int i, int argc, char **argv) {
 			printf("After -a, ABC path must be introduced.\n");
 			return -1;
         }
+	}
+
+    return 0;
+}
+
+// Parse -p or --positive
+int parse_positive(int i, int argc, char **argv) {
+
+    if ( !strcmp(argv[i], "-p") || !strcmp(argv[i], "--positive") ) {
+        positive_mode = 1;
 	}
 
     return 0;
@@ -100,6 +111,7 @@ void print_usage(char **argv) {
     printf("\t-a ABC_path:\t\tspecify ABC path\n");
     printf("\t-e Espresso_path:\tspecify Espresso logic minimizer path\n");
     printf("\t-h or --help:\t\tprint help of the tool\n");
+    printf("\t-p or --positive:\tforce equations to contain only positive literals\n");
     printf("\t-v or --version:\tprint tool version\n");
 
     return;
@@ -108,7 +120,7 @@ void print_usage(char **argv) {
 // Print version
 void print_version(char **argv) {
 
-    printf("%s v0.1\n", argv[0]);
+    printf("%s v0.2\n", argv[0]);
 
     return;
 }

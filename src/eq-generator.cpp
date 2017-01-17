@@ -93,7 +93,6 @@ int generate_window_condition(unsigned wi) {
 
     vector<string> equations = read_equations(espresso_result_path);
 
-
     cout << "Wakeup condition for Window " << wi+1 << ":" << "\n";
     if ( abc_path.empty() ) {
         unsigned n_eqs = equations.size();
@@ -268,7 +267,9 @@ int generate_marking_condition(unsigned wi) {
         return -1;
     }
     
-    run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+    if ( !positive_mode ) {
+        run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+    }
 
     vector<string> equations = read_equations(espresso_result_path);
 
@@ -471,6 +472,7 @@ int run_espresso(char* espresso_path, char* karnaugh_map, char* result_path) {
 int write_karnaugh_map(char* pla_path) {
 
     FILE *fp = NULL;
+    FILE *fpc = NULL;
     vector<string> inputs;
     vector<string> outputs;
     int n_inputs = count_inputs(&inputs);
@@ -501,7 +503,166 @@ int write_karnaugh_map(char* pla_path) {
 
     fclose(fp);
 
+    if ( positive_mode && n_outputs == 1) {
+
+        force_positive_literals(n_inputs);
+
+    } else if ( positive_mode ) {
+
+        if ( (fpc = fopen(espresso_copy_path, "w")) == NULL) {
+            fprintf(stderr, "Error opening the temporary file\n");
+            return -1;
+        }
+        
+        copy_file(pla_path, pla_path_back);
+
+        for (int i = 0; i < n_outputs; i++) {
+
+            if ( build_single_pla(i, outputs, n_inputs, n_outputs) != 0 ) {
+                return -1;
+            }
+
+            force_positive_literals(n_inputs);
+
+            run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+
+            vector<string> equations = read_equations(espresso_result_path);
+            fprintf(fpc, "%s\n\n", equations[0].c_str());
+            
+        }
+
+        fclose(fpc);
+
+        copy_file(espresso_copy_path, espresso_result_path);
+    }
+
     return 0;
+}
+
+// Split a PLA with multiple outputs into a PLA with output addressed by 'index'
+int build_single_pla(int index, vector<string> outputs, int n_inputs, int n_outputs) {
+
+    FILE *fps = NULL;
+    FILE *fpd = NULL;
+    char *inputs;
+    char *outs;
+    char c;
+    
+    inputs = (char*) malloc( sizeof(char) * (n_inputs + 2) );
+    outs = (char*) malloc( sizeof(char) * (n_outputs + 2) );
+
+    fps = fopen(pla_path_back, "r");
+    fpd = fopen(pla_path, "w");
+
+    for (int j = 0; j < 2; j++) {
+		while( (c = fgetc(fps)) != '\n') {
+            fputc(c, fpd);
+        }
+        fputc('\n', fpd);
+	}
+
+    while( (c = fgetc(fps)) != '\n');
+    fprintf(fpd, ".o 1\n");
+
+    while( (c = fgetc(fps)) != '\n') {
+        fputc(c, fpd);
+    }
+    fputc('\n', fpd);
+
+    while( (c = fgetc(fps)) != '\n');
+    fprintf(fpd, ".ob %s\n", outputs[(unsigned)index].c_str());
+
+    while( fscanf(fps, "%s %s", inputs, outs) == 2 ) {
+        fprintf(fpd, "%s %c\n",inputs, outs[index]);
+    }
+    fprintf(fpd, ".e");
+
+    free(inputs);
+    free(outs);
+    fclose(fpd);
+    fclose(fps);
+
+    return 0;
+}
+
+// Substitute 1 with - in the off-set for forcing equations with positive lits
+void force_positive_literals(int n_inputs) {
+
+    char c;
+    char output;
+    char *inputs;
+    FILE *fp = NULL;
+    FILE *fpd = NULL;
+    vector<int> lines;
+    vector<string> inputs_mod;
+    int i = 0;
+
+    copy_file(pla_path, pla_path_copy);
+
+    if ( (fp = fopen(pla_path_copy, "r")) == NULL) {
+        fprintf(stderr, "Error opening the temporary file\n");
+        return;
+    }
+
+    inputs = (char*) malloc( sizeof(char) * (n_inputs + 2) );
+
+    // Throw away first fifth lines
+	for(int j = 0; j < 5; j++){
+		while( (c = fgetc(fp)) != '\n');
+	}
+
+    while ( fscanf(fp, "%s%c%c", inputs, &c, &output) == 3 ) {
+
+        if ( output ==  '0' ) {
+            lines.push_back(i);
+
+            for (int j = 0; j < n_inputs; j++) {
+                if (inputs[j] == '1') inputs[j] = '-';
+            }
+
+            inputs_mod.push_back(inputs);
+
+        }
+        i++;
+    }
+
+    fclose(fp);
+    free(inputs);
+
+    fp = fopen(pla_path_copy, "r");
+    fpd = fopen(pla_path, "w");
+
+    for (int j = 0; j < 5; j++) {
+		while( (c = fgetc(fp)) != '\n') {
+            fputc(c, fpd);
+        }
+        fputc('\n', fpd);
+	}
+
+    if (lines.size() > 0){
+        unsigned k = 0;
+        for (int j = 0; j < i; j++) {
+            if (lines[k] == j) {
+                fprintf(fpd, "%s 0\n", inputs_mod[k].c_str());
+                k++;
+                while( (c = fgetc(fp)) != '\n');
+            } else {
+                while( (c = fgetc(fp)) != '\n') {
+                    fputc(c, fpd);
+                }
+                fputc('\n', fpd);
+            }
+        }
+    }
+
+    while ( (c = fgetc(fp)) != EOF ) {
+        fprintf(fpd, "%c", c);
+    }
+
+    fclose(fp);
+    fclose(fpd);
+
+    return;
 }
 
 // Set the range of the inputs within the inputs in the Karnaugh Map

@@ -63,11 +63,39 @@ int rm_tmp_file(char* tmp_name) {
 	return 0;
 }
 
+int copy_file(char* src, char* dst) {
+
+    FILE *fps = NULL, *fpd = NULL;
+    char c;
+
+    if ( (fps = fopen(src, "r")) == NULL) {
+        fprintf(stderr, "Error opening the temporary file\n");
+        return -1;
+    }
+
+    if ( (fpd = fopen(dst, "w")) == NULL) {
+        fprintf(stderr, "Error opening the temporary file\n");
+        return -1;
+    }
+
+    while ( (c = fgetc(fps)) != EOF ) {
+        fprintf(fpd,"%c", c);
+    }
+
+    fclose(fps);
+    fclose(fpd);
+
+    return 0;
+}
+
 // Create all temporary files
 void create_tmp_files() {
 
     create_tmp_filename(pla_path);
+    create_tmp_filename(pla_path_back);
+    create_tmp_filename(pla_path_copy);
     create_tmp_filename(espresso_result_path);
+    create_tmp_filename(espresso_copy_path);
     create_tmp_filename(abc_script_path);
     create_tmp_filename(abc_equations_path);
     create_tmp_filename(abc_result_path);
@@ -79,7 +107,10 @@ void create_tmp_files() {
 void remove_tmp_files() {
 
     rm_tmp_file(pla_path);
+    rm_tmp_file(pla_path_back);
+    rm_tmp_file(pla_path_copy);
     rm_tmp_file(espresso_result_path);
+    rm_tmp_file(espresso_copy_path);
     rm_tmp_file(abc_script_path);
     rm_tmp_file(abc_equations_path);
     rm_tmp_file(abc_result_path);

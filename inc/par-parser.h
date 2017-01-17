@@ -10,6 +10,7 @@
 int parse_arg(int, char**);
 int parse_espresso(int, int, char**);
 int parse_abc(int, int, char**);
+int parse_positive(int, int, char**);
 int parse_help(int, int, char**);
 int parse_version(int, int, char**);
 void print_help(char**);
