@@ -1,4 +1,4 @@
-# Wake-up equations for Process-windows
+# Shutters - Wake-up equations for Process-windows
 This tool reads `markings` extension files (produced by a process windows mining tool), and generates the wakeup condition for each window, as well as the wakeup marking conditions for the places in each window. The tool uses `espresso` logic minimizer for synthesis of the obtained conditions.
 
 ### How to install the tool
