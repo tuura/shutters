@@ -33,8 +33,7 @@ int generate_window_conditions() {
 
     for (unsigned i = 0; i < n_windows; i++) {
         if ( generate_window_condition(i) ) {
-            fprintf(stderr, "Error on generating wakeup conditions\
-                             for the Window %d\n", i+1);
+            fprintf(stderr, "Error on generating wakeup conditions for the Window %d\n", i+1);
             return -1;
         }
     }
@@ -49,8 +48,7 @@ int generate_marking_conditions() {
 
     for (unsigned i = 0; i < n_windows; i++) {
         if ( generate_marking_condition(i) ) {
-            fprintf(stderr, "Error on generating marking conditions\
-                             for the Window %d\n", i+1);
+            fprintf(stderr, "Error on generating marking conditions for the Window %d\n", i+1);
             return -1;
         }
     }
@@ -89,7 +87,9 @@ int generate_window_condition(unsigned wi) {
         return -1;
     }
 
-    run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+    if ( run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path) ) {
+        return -1;
+    }
 
     vector<string> equations = read_equations(espresso_result_path);
 
@@ -266,9 +266,11 @@ int generate_marking_condition(unsigned wi) {
         fprintf(stderr, "Error on writing the Karnaugh map\n");
         return -1;
     }
-    
+
     if ( !positive_mode ) {
-        run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+        if ( run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path) ) {
+            return -1;
+        }
     }
 
     vector<string> equations = read_equations(espresso_result_path);
@@ -445,6 +447,8 @@ vector<string> find_source_states(string state_name) {
 int run_espresso(char* espresso_path, char* karnaugh_map, char* result_path) {
 
 	char *command;
+    char error[FILENAME_MAX];
+    FILE *fp = NULL;
 
     // Build command
 	command = strdup("");
@@ -462,6 +466,16 @@ int run_espresso(char* espresso_path, char* karnaugh_map, char* result_path) {
 		fprintf(stderr, "Error running Espresso: %s\n", command);
 		return -1;
 	}
+
+    // Check execution
+    fp = fopen(result_path, "r");
+    if ( fscanf(fp, "%s", error) == 1 && strcmp(error, "espresso:") == 0 ) {
+        fprintf(stderr, "espresso: ON-set and OFF-set are not orthogonal\n");
+        fclose(fp);
+        return -1;
+    }
+    fclose(fp);
+    
 
     free(command);
 
@@ -524,7 +538,9 @@ int write_karnaugh_map(char* pla_path) {
 
             force_positive_literals(n_inputs);
 
-            run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path);
+            if ( run_espresso((char*)espresso_path.c_str(), pla_path, espresso_result_path) ) {
+                return -1;
+            }
 
             vector<string> equations = read_equations(espresso_result_path);
             fprintf(fpc, "%s\n\n", equations[0].c_str());
