@@ -15,5 +15,6 @@ char* cat_strings(char*, char*);
 char* cat_char(char*, char);
 void create_tmp_files();
 void remove_tmp_files();
+void print_file(char*);
 
 #endif

@@ -1,5 +1,5 @@
 # Shutters - Wake-up equations for Process-windows
-This tool reads `markings` extension files (produced by a process windows mining tool), and generates the wakeup condition for each window, as well as the wakeup marking conditions for the places in each window. The tool uses `espresso` logic minimizer for synthesis of the obtained conditions.
+This tool reads `markings` extension files (produced by a process windows mining tool), and generates the wakeup condition for each window, as well as the wakeup marking conditions for the places in each window. The tool uses `espresso` logic minimizer for synthesis of the obtained conditions. `ABC` can be also used optionally for their refactorisation.
 
 ### How to install the tool
 Clone the repository and run the Makefile.
@@ -15,66 +15,162 @@ $ ./shutters [file.markings] -e [espresso_path]
 ```
 Run `./shutters --help` for the help of the tool.
 
+```bash
+Options available:
+	-a ABC_path:		specify ABC path
+	-e Espresso_path:	specify Espresso logic minimizer path
+	-h or --help:		print help of the tool
+	-p or --positive:	force equations to contain only positive literals
+	-v or --version:	print tool version
+```
+
 ### Results
-The followind equations have been obtained by running the tool over the files contained inside the `/test` directory. `buck.marking` models the buck controller, the others are the FSMs depicted in the figures of the `Process Windows` article. Note: the places whose wakeup marking conditions are `0` are not shown for brevity. A place `pN` in window `M` is referred to as `wMpN`.
+The following equations have been obtained by running the tool over the files contained inside the `/test` directory. `buck.marking` models the buck controller, the others are the FSMs depicted in the figures of the `Process Windows` article. Note: the places whose wakeup marking conditions are `0` are not shown for brevity. A place `pN` in window `M` is referred to as `wMpN`.
 
-#### fig1
-```text
-Wakeup marking conditions for Window 1:
-w1p1 = (!w2p3);
-w1p5 = 1;
-w1p2 = (w2p3);
-Wakeup marking conditions for Window 2:
-w2p5 = 1;
-w2p2 = (!w1p2);
-w2p3 = (w1p2);
-Wakeup condition for Window 1:
-w1 = (!w2p1&w2p5);
-Wakeup condition for Window 2:
-w2 = (w1p5&!w1p3);
-```
+#### Figure 1
+<table>
+  <tr>
+    <th>Negative literals without ABC</th>
+    <th>Positive literals without ABC</th>
+    <th>Negative literals with ABC</th>
+    <th>Positive literals with ABC</th>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 1:<br/>w1p1 = (!w2p3);<br/>w1p2 = (w2p3);<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p1 = (w2p2);<br/>w1p2 = (w2p3);<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p1 = !w2p3;<br/>w1p2 = w2p3;<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p1 = w2p2;<br/>w1p2 = w2p3;<br/>w1p5 = 1;</td>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 2:<br/>w2p2 = (!w1p2);<br/>w2p3 = (w1p2);<br/>w2p5 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p2 = (w1p1);<br/>w2p3 = (w1p2);<br/>w2p5 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p2 = !w1p2;<br/>w2p3 = w1p2;<br/>w2p5 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p2 = w1p1;<br/>w2p3 = w1p2;<br/>w2p5 = 1;</td>
+  </tr>
+  <tr>
+    <td>Eq. window 1:<br/>w1 = (!w2p1&w2p5);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p5*w2p2) + (w2p5*w2p3);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p5*w2p2) + (w2p5*w2p3);</td>
+    <td>Eq. window 1:<br/>w1 = w2p5 * (w2p3 + w2p2);</td>
+  </tr>
+  <tr>
+    <td>Eq. window 2:<br/>w2 = (w1p5&!w1p3);</td>
+    <td>Eq. window 2:<br/>w2 = (w1p1*w1p5) + (w1p5*w1p2);</td>
+    <td>Eq. window 2:<br/>w2 = !w1p3 * w1p5;</td>
+    <td>Eq. window 2:<br/>w2 = w1p5 * (w1p2 + w1p1);</td>
+  </tr>
+</table>
 
-#### fig3
-```text
-Wakeup marking conditions for Window 1:
-w1p1 = (w2p4);
-w1p4 = 1;
-w1p2 = (!w2p4);
-Wakeup marking conditions for Window 2:
-w2p1 = (w1p4);
-w2p4 = 1;
-w2p2 = (!w1p4);
-Wakeup condition for Window 1:
-w1 = (w2p1);
-Wakeup condition for Window 2:
-w2 = (w1p1);
-```
+#### Figure 3 
+<table>
+  <tr>
+    <th>Negative literals without ABC</th>
+    <th>Positive literals without ABC</th>
+    <th>Negative literals with ABC</th>
+    <th>Positive literals with ABC</th>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 1:<br/>w1p1 = (w2p4);<br/>w1p2 = (!w2p4);<br/>w1p4 = 1;</td>
+    <td align="center">-</td>
+    <td>Marking eqs. win. 1:<br/>w1p1 = w2p4;<br/>w1p2 = !w2p4;<br/>w1p4 = 1;</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 2:<br/>w2p1 = (w1p4);<br/>w2p2 = (!w1p4);<br/>w2p4 = 1;</td>
+    <td align="center">-</td>
+    <td>Marking eqs. win. 2:<br/>w2p1 = w1p4;<br/>w2p2 = !w1p4;<br/>w2p4 = 1;</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>Eq. window 1:<br/>w1 = (w2p1);</td>
+    <td align="center">-</td>
+    <td>Eq. window 1:<br/>w1 = w2p1;</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>Eq. window 2:<br/>w2 = (w1p1);</td>
+    <td align="center">-</td>
+    <td>Eq. window 2:<br/>w2 = w1p1;</td>
+    <td align="center">-</td>
+  </tr>
+</table>
 
-#### fig4
-```text
-Wakeup marking conditions for Window 1:
-w1p3 = 1;
-w1p5 = 1;
-Wakeup marking conditions for Window 2:
-w2p1 = 1;
-Wakeup condition for Window 1:
-w1 = (w2p1);
-Wakeup condition for Window 2:
-w2 = (w1p3&!w1p4);
-```
+#### Figure 4
+<table>
+  <tr>
+    <th>Negative literals without ABC</th>
+    <th>Positive literals without ABC</th>
+    <th>Negative literals with ABC</th>
+    <th>Positive literals with ABC</th>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+  </tr>
+  <tr>
+    <td>Eq. window 1:<br/>w1 = (w2p1);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p1);</td>
+    <td>Eq. window 1:<br/>w1 = w2p1;</td>
+    <td>Eq. window 1:<br/>w1 = w2p1;</td>
+  </tr>
+  <tr>
+    <td>Eq. window 2:<br/>w2 = (w1p3*!w1p4);</td>
+    <td>Eq. window 2:<br/>w2 = (w1p3*w1p5);</td>
+    <td>Eq. window 2:<br/>w2 = !w1p4 * w1p3;</td>
+    <td>Eq. window 2:<br/>w2 = w1p3 * w1p5;</td>
+  </tr>
+</table>
 
-#### buck
-```text
-Wakeup marking conditions for Window 1:
-w1p1 = 1;
-Wakeup marking conditions for Window 2:
-w2p1 = 1;
-Wakeup marking conditions for Window 3:
-w3p3 = 1;
-Wakeup condition for Window 1:
-w1 = (w2p1&w3p3);
-Wakeup condition for Window 2:
-w2 = (w1p1&w3p3);
-Wakeup condition for Window 3:
-w3 = (w1p1&w2p1);
-```
+#### Buck controller
+<table>
+  <tr>
+    <th>Negative literals without ABC</th>
+    <th>Positive literals without ABC</th>
+    <th>Negative literals with ABC</th>
+    <th>Positive literals with ABC</th>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+  </tr>
+  <tr>
+    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
+    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
+    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
+    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
+  </tr>
+  <tr>
+    <td>Eq. window 1:<br/>w1 = (w2p1*w3p3);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p1*w3p3);</td>
+    <td>Eq. window 1:<br/>w1 = w2p1 * w3p3;</td>
+    <td>Eq. window 1:<br/>w1 = w2p1 * w3p3;</td>
+  </tr>
+  <tr>
+    <td>Eq. window 2:<br/>w2 = (w1p1*w3p3);</td>
+    <td>Eq. window 2:<br/>w2 = (w1p1*w3p3);</td>
+    <td>Eq. window 2:<br/>w2 = w1p1 * w3p3;</td>
+    <td>Eq. window 2:<br/>w2 = w1p1 * w3p3;</td>
+  </tr>
+  <tr>
+    <td>Eq. window 3:<br/>w3 = (w1p1*w2p1);</td>
+    <td>Eq. window 3:<br/>w3 = (w1p1*w2p1);</td>
+    <td>Eq. window 3:<br/>w3 = w1p1 * w2p1;</td>
+    <td>Eq. window 3:<br/>w3 = w1p1 * w2p1;</td>
+  </tr>
+</table>
