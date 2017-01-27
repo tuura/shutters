@@ -68,12 +68,12 @@ int copy_file(char* src, char* dst) {
     FILE *fps = NULL, *fpd = NULL;
     char c;
 
-    if ( (fps = fopen(src, "r")) == NULL) {
+    if ( (fps = fopen(src, "r")) == NULL ) {
         fprintf(stderr, "Error opening the temporary file\n");
         return -1;
     }
 
-    if ( (fpd = fopen(dst, "w")) == NULL) {
+    if ( (fpd = fopen(dst, "w")) == NULL ) {
         fprintf(stderr, "Error opening the temporary file\n");
         return -1;
     }
@@ -149,4 +149,27 @@ char* cat_char(char *str1, char c) {
 	free(str1);
 
 	return newStr;
+}
+
+// Print file to stdout (for debugging)
+
+void print_file(char *file_name) {
+
+    FILE *fp;
+    char c;
+
+    if ( (fp = fopen(file_name, "r")) == NULL ) {
+        fprintf(stderr, "Error opening %s.\n", file_name);
+        return;
+    }
+
+    printf("\n=====================\n");
+    while ( (c = fgetc(fp)) != EOF) {
+        printf("%c", c);
+    }
+    printf("\n=====================\n");
+
+    fclose(fp);
+
+    return;
 }
