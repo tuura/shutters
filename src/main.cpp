@@ -53,7 +53,9 @@ int main(int argc, char** argv) {
     // print_structure();
 
     // Generate Boolean equations
-    generate_wakeup_conditions();
+    if ( generate_wakeup_conditions() ) {
+        return -1;
+    }
 
     cout << "Program terminated.\n";
 
