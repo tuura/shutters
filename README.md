@@ -61,7 +61,7 @@ The following equations have been obtained by running the tool over the files co
   </tr>
 </table>
 
-#### Figure 3 
+#### Figure 9
 <table>
   <tr>
     <th>Negative literals without ABC</th>
@@ -70,32 +70,32 @@ The following equations have been obtained by running the tool over the files co
     <th>Positive literals with ABC</th>
   </tr>
   <tr>
-    <td>Marking eqs. win. 1:<br/>w1p1 = (w2p4);<br/>w1p2 = (!w2p4);<br/>w1p4 = 1;</td>
-    <td align="center">-</td>
-    <td>Marking eqs. win. 1:<br/>w1p1 = w2p4;<br/>w1p2 = !w2p4;<br/>w1p4 = 1;</td>
-    <td align="center">-</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = (!w2p9);<br/>w1p1 = (w2p9);<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = (w2p8);<br/>w1p1 = (w2p9);<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = !w2p9;<br/>w1p1 = w2p9;<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = w2p8;<br/>w1p1 = w2p9;<br/>w1p3 = 1;</td>
   </tr>
   <tr>
-    <td>Marking eqs. win. 2:<br/>w2p1 = (w1p4);<br/>w2p2 = (!w1p4);<br/>w2p4 = 1;</td>
-    <td align="center">-</td>
-    <td>Marking eqs. win. 2:<br/>w2p1 = w1p4;<br/>w2p2 = !w1p4;<br/>w2p4 = 1;</td>
-    <td align="center">-</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = (!w1p4);<br/>w2p6 = (w1p4);<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = (w1p3);<br/>w2p6 = (w1p4);<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = !w1p4;<br/>w2p6 = w1p4;<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = w1p3;<br/>w2p6 = w1p4;<br/>w2p8 = 1;</td>
   </tr>
   <tr>
-    <td>Eq. window 1:<br/>w1 = (w2p1);</td>
-    <td align="center">-</td>
-    <td>Eq. window 1:<br/>w1 = w2p1;</td>
-    <td align="center">-</td>
+    <td>Eq. window 1:<br/>w1 = (w2p5);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p5);</td>
+    <td>Eq. window 1:<br/>w1 = w2p5;</td>
+    <td>Eq. window 1:<br/>w1 = w2p5;</td>
   </tr>
   <tr>
-    <td>Eq. window 2:<br/>w2 = (w1p1);</td>
-    <td align="center">-</td>
-    <td>Eq. window 2:<br/>w2 = w1p1;</td>
-    <td align="center">-</td>
+    <td>Eq. window 2:<br/>w2 = (w1p0);</td>
+    <td>Eq. window 2:<br/>w2 = (w1p0);</td>
+    <td>Eq. window 2:<br/>w2 = w1p0;</td>
+    <td>Eq. window 2:<br/>w2 = w1p0;</td>
   </tr>
 </table>
 
-#### Figure 4
+#### Figure 10
 <table>
   <tr>
     <th>Negative literals without ABC</th>
@@ -104,28 +104,28 @@ The following equations have been obtained by running the tool over the files co
     <th>Positive literals with ABC</th>
   </tr>
   <tr>
-    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p3 = 1;<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
   </tr>
   <tr>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
   </tr>
   <tr>
-    <td>Eq. window 1:<br/>w1 = (w2p1);</td>
-    <td>Eq. window 1:<br/>w1 = (w2p1);</td>
-    <td>Eq. window 1:<br/>w1 = w2p1;</td>
-    <td>Eq. window 1:<br/>w1 = w2p1;</td>
+    <td>Eq. window 1:<br/>w1 = (w2p5*!w2p9);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p5*w2p8);</td>
+    <td>Eq. window 1:<br/>w1 = !w2p9 * w2p5;</td>
+    <td>Eq. window 1:<br/>w1 = w2p5 * w2p8;</td>
   </tr>
   <tr>
-    <td>Eq. window 2:<br/>w2 = (w1p3*!w1p4);</td>
-    <td>Eq. window 2:<br/>w2 = (w1p3*w1p5);</td>
-    <td>Eq. window 2:<br/>w2 = !w1p4 * w1p3;</td>
-    <td>Eq. window 2:<br/>w2 = w1p3 * w1p5;</td>
+    <td>Eq. window 2:<br/>w2 = (w1p0*!w1p4);</td>
+    <td>Eq. window 2:<br/>w2 = (w1p0*w1p3);</td>
+    <td>Eq. window 2:<br/>w2 = !w1p4 * w1p0;</td>
+    <td>Eq. window 2:<br/>w2 = w1p0 * w1p3;</td>
   </tr>
 </table>
 
