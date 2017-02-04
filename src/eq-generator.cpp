@@ -62,20 +62,25 @@ int generate_window_condition(unsigned wi) {
     unsigned n_windows = windows.size();
     kmw.clear();
 
-
     for (unsigned i = 0; i < n_windows; i++) {
         if ( wi != i ) {
             vector<string> woken_states = find_woken_states_between_windows(wi, i);
+            vector<string> out_states = find_out_states_between_windows(wi, i);
 
             if ( !woken_states.empty() ) {
                 espresso_format kmt;
-                kmt.inputs = push_back_inputs_window(woken_states, i);
-                kmt.outputs = push_back_output_window(woken_states, wi, i);
+                kmt.inputs = push_back_inputs_window(woken_states, out_states, i);
+                kmt.outputs = push_back_output_window(woken_states, out_states, wi, i);
                 unsigned n_states = windows[i].states.size();
                 for (unsigned j = 0; j < n_states; j++) {
-                    kmt.states_in.push_back(windows[i].states[j].name);
-                    kmt.states_out.push_back(windows[i].states[j].name);
+
+                    if ( state_exist_set(windows[i].states[j].name, woken_states) != -1 ||
+                         state_exist_set(windows[i].states[j].name, out_states) != -1 ){
+                        kmt.states_in.push_back(windows[i].states[j].name);
+                        kmt.states_out.push_back(windows[i].states[j].name);
+                   }
                 }
+
                 kmw.push_back(kmt);
             }
 
@@ -191,7 +196,8 @@ char* replace_zeros_ones(char* eq) {
 
 // Accumulate all the inputs related to wake up window condition into
 // the set for Espresso format
-vector<signal_type> push_back_inputs_window(vector<string> active_states, unsigned wi) {
+vector<signal_type> push_back_inputs_window( vector<string> woken_states,\
+                                             vector<string> out_states, unsigned wi) {
 
     unsigned n_places = windows[wi].places.size();
     unsigned n_states = windows[wi].states.size();
@@ -203,7 +209,12 @@ vector<signal_type> push_back_inputs_window(vector<string> active_states, unsign
 
         // Add input marking
         for (unsigned j = 0; j < n_states; j++) {
-            add_signal(&inputs, name_input, j, wi, i);
+
+            if ( state_exist_set(windows[wi].states[j].name, woken_states) != -1 ||
+                 state_exist_set(windows[wi].states[j].name, out_states) != -1 ) {
+                add_signal(&inputs, name_input, j, wi, i);
+            }
+
         }
     }
 
@@ -213,6 +224,7 @@ vector<signal_type> push_back_inputs_window(vector<string> active_states, unsign
 // Accumulate all the outputs related to wake up window condition into
 // the set for Espresso format
 vector<signal_type> push_back_output_window( vector<string> woken_states,\
+                                             vector<string> out_states,\
                                              unsigned wi, unsigned si) {
 
     unsigned n_states = windows[si].states.size();
@@ -222,13 +234,16 @@ vector<signal_type> push_back_output_window( vector<string> woken_states,\
     vector<signal_type> outputs;
 
     for (unsigned i = 0; i < n_states; i++) {
-        int val = state_exist_set(windows[si].states[i].name, woken_states) != -1 ? 1:0;
-        if ( (sig_index = signal_exist(out_name, outputs)) == -1 ) {
-            signal.name = out_name;
-            signal.marking.push_back(val);
-            outputs.push_back(signal);
-        } else {
-            outputs[(unsigned)sig_index].marking.push_back(val);
+        if ( state_exist_set(windows[si].states[i].name, woken_states) != -1 ||
+             state_exist_set(windows[si].states[i].name, out_states) != -1 ) {
+            int val = state_exist_set(windows[si].states[i].name, woken_states) != -1 ? 1:0;
+            if ( (sig_index = signal_exist(out_name, outputs)) == -1 ) {
+                signal.name = out_name;
+                signal.marking.push_back(val);
+                outputs.push_back(signal);
+            } else {
+                outputs[(unsigned)sig_index].marking.push_back(val);
+            }
         }
     }
 
@@ -379,6 +394,7 @@ vector<string> find_all_woken_states(unsigned wi) {
     return woken_states;
 }
 
+
 // Find states which need wakeup Boolean conditions between two windows
 vector<string> find_woken_states_between_windows(unsigned wi, unsigned di) {
     
@@ -400,6 +416,23 @@ vector<string> find_woken_states_between_windows(unsigned wi, unsigned di) {
     }
 
     return woken_states;
+}
+
+// Find states which are outside between two windows
+vector<string> find_out_states_between_windows(unsigned wi, unsigned di) {
+    
+    vector<string> out_states;
+    unsigned n_states = windows[di].states.size();
+
+    for (unsigned j = 0; j < n_states; j++) {
+
+        if ( state_exist_window(windows[di].states[j].name, wi) == -1 ) {
+            out_states.push_back(windows[di].states[j].name);
+        }
+
+    }
+
+    return out_states;
 }
 
 // Does the state exist in the set of states 'set'?
