@@ -40,10 +40,11 @@ string name_place_in_window(unsigned, unsigned);
 
 vector<string> find_all_woken_states(unsigned);
 vector<string> find_woken_states_between_windows(unsigned, unsigned);
+vector<string> find_out_states_between_windows(unsigned, unsigned);
 vector<string> find_source_states(string);
 vector<string> read_equations(char*);
 
-vector<signal_type> push_back_output_window(vector<string>, unsigned, unsigned);
-vector<signal_type> push_back_inputs_window(vector<string>, unsigned);
+vector<signal_type> push_back_output_window(vector<string>, vector<string>, unsigned, unsigned);
+vector<signal_type> push_back_inputs_window(vector<string>, vector<string>, unsigned);
 
 #endif
