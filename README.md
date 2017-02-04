@@ -27,7 +27,10 @@ Options available:
 ### Results
 The following equations have been obtained by running the tool over the files contained inside the `/test` directory. `buck.marking` models the buck controller, the others are the FSMs depicted in the figures of the `Process Windows` article. Note: the places whose wakeup marking conditions are `0` are not shown for brevity. A place `pN` in window `M` is referred to as `wMpN`.
 
-#### Figure 1
+#### Motivational example
+
+![Workcraft screenshot of the motivational example (Figure 1)](https://github.com/allegroCoder/shutters/blob/master/fig/motivational-example.png)
+
 <table>
   <tr>
     <th>Negative literals without ABC</th>
@@ -36,32 +39,35 @@ The following equations have been obtained by running the tool over the files co
     <th>Positive literals with ABC</th>
   </tr>
   <tr>
-    <td>Marking eqs. win. 1:<br/>w1p1 = (!w2p3);<br/>w1p2 = (w2p3);<br/>w1p5 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p1 = (w2p2);<br/>w1p2 = (w2p3);<br/>w1p5 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p1 = !w2p3;<br/>w1p2 = w2p3;<br/>w1p5 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p1 = w2p2;<br/>w1p2 = w2p3;<br/>w1p5 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = (w2p7);<br/>w1p2 = (!w2p7);<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = (w2p7);<br/>w1p2 = (w2p6);<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = w2p7;<br/>w1p2 = !w2p7;<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1p0 = w2p7;<br/>w1p2 = w2p6;<br/>w1p3 = 1;</td>
   </tr>
   <tr>
-    <td>Marking eqs. win. 2:<br/>w2p2 = (!w1p2);<br/>w2p3 = (w1p2);<br/>w2p5 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p2 = (w1p1);<br/>w2p3 = (w1p2);<br/>w2p5 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p2 = !w1p2;<br/>w2p3 = w1p2;<br/>w2p5 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p2 = w1p1;<br/>w2p3 = w1p2;<br/>w2p5 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p6 = (!w1p0);<br/>w2p7 = (w1p0);<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p6 = (w1p2);<br/>w2p7 = (w1p0);<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p6 = !w1p0;<br/>w2p7 = w1p0;<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2p6 = w1p2;<br/>w2p7 = w1p0;<br/>w2p8 = 1;</td>
   </tr>
   <tr>
-    <td>Eq. window 1:<br/>w1 = (!w2p1&w2p5);</td>
-    <td>Eq. window 1:<br/>w1 = (w2p5*w2p2) + (w2p5*w2p3);</td>
-    <td>Eq. window 1:<br/>w1 = (w2p5*w2p2) + (w2p5*w2p3);</td>
-    <td>Eq. window 1:<br/>w1 = w2p5 * (w2p3 + w2p2);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p8*!w2p5);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p6*w2p8) + (w2p8*w2p7);</td>
+    <td>Eq. window 1:<br/>w1 = !w2p5 * w2p8;</td>
+    <td>Eq. window 1:<br/>w1 = w2p8 * (w2p7 + w2p6);</td>
   </tr>
   <tr>
-    <td>Eq. window 2:<br/>w2 = (w1p5&!w1p3);</td>
-    <td>Eq. window 2:<br/>w2 = (w1p1*w1p5) + (w1p5*w1p2);</td>
-    <td>Eq. window 2:<br/>w2 = !w1p3 * w1p5;</td>
-    <td>Eq. window 2:<br/>w2 = w1p5 * (w1p2 + w1p1);</td>
+    <td>Eq. window 2:<br/>w2 = (!w1p1*w1p3);</td>
+    <td>Eq. window 2:<br/>w2 = (w1p3*w1p2) + (w1p3*w1p0);</td>
+    <td>Eq. window 2:<br/>w2 = !w1p1 * w1p3;</td>
+    <td>Eq. window 2:<br/>w2 = w1p3 * (w1p0 + w1p2);</td>
   </tr>
 </table>
 
-#### Figure 9
+#### Arbiter
+
+![Workcraft screenshot of the arbiter (Figure 9)](https://github.com/allegroCoder/shutters/blob/master/fig/arbiter.png)
+
 <table>
   <tr>
     <th>Negative literals without ABC</th>
@@ -95,7 +101,10 @@ The following equations have been obtained by running the tool over the files co
   </tr>
 </table>
 
-#### Figure 10
+#### OR causality
+
+![Workcraft screenshot of the OR causality (Figure 10)](https://github.com/allegroCoder/shutters/blob/master/fig/or-causality.png)
+
 <table>
   <tr>
     <th>Negative literals without ABC</th>
@@ -116,16 +125,16 @@ The following equations have been obtained by running the tool over the files co
     <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
   </tr>
   <tr>
-    <td>Eq. window 1:<br/>w1 = (w2p5*!w2p9);</td>
-    <td>Eq. window 1:<br/>w1 = (w2p5*w2p8);</td>
-    <td>Eq. window 1:<br/>w1 = !w2p9 * w2p5;</td>
-    <td>Eq. window 1:<br/>w1 = w2p5 * w2p8;</td>
+    <td>Eq. window 1:<br/>w1 = (!w2p9);</td>
+    <td>Eq. window 1:<br/>w1 = (w2p8);</td>
+    <td>Eq. window 1:<br/>w1 = !w2p9;</td>
+    <td>Eq. window 1:<br/>w1 = w2p8;</td>
   </tr>
   <tr>
-    <td>Eq. window 2:<br/>w2 = (w1p0*!w1p4);</td>
-    <td>Eq. window 2:<br/>w2 = (w1p0*w1p3);</td>
-    <td>Eq. window 2:<br/>w2 = !w1p4 * w1p0;</td>
-    <td>Eq. window 2:<br/>w2 = w1p0 * w1p3;</td>
+    <td>Eq. window 2:<br/>w2 = (!w1p4);</td>
+    <td>Eq. window 2:<br/>w2 = (w1p3);</td>
+    <td>Eq. window 2:<br/>w2 = !w1p4;</td>
+    <td>Eq. window 2:<br/>w2 = w1p3;</td>
   </tr>
 </table>
 

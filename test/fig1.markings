@@ -19,17 +19,17 @@ s0 p s1
 .initial s0
 
 .window 1
-.state s7 p1 p4
-.state s4 p1 p5
-.state s0 p2 p5
-.state s8 p2 p4
-.state s9 p3 p4
-.state s6 p3 p5
+.state s1 p1 p4
+.state s2 p1 p3
+.state s3 p2 p4
+.state s4 p2 p3
+.state s5 p0 p4
+.state s0 p0 p3
 
 .window 2
-.state s1 p1 p4
-.state s2 p1 p5
-.state s3 p2 p4
-.state s4 p2 p5
-.state s5 p3 p4
-.state s0 p3 p5
+.state s7 p6 p9
+.state s4 p6 p8
+.state s0 p7 p8
+.state s8 p7 p9
+.state s9 p5 p9
+.state s6 p5 p8
