@@ -113,32 +113,36 @@ The following equations have been obtained by running the tool over the files co
     <th>Positive literals with ABC</th>
   </tr>
   <tr>
-    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p0 = 1;<br/>w1p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p0 = 1;<br/>w1.p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p0 = 1;<br/>w1.p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p0 = 1;<br/>w1.p3 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p0 = 1;<br/>w1.p3 = 1;</td>
   </tr>
   <tr>
-    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p5 = 1;<br/>w2p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p5 = 1;<br/>w2.p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p5 = 1;<br/>w2.p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p5 = 1;<br/>w2.p8 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p5 = 1;<br/>w2.p8 = 1;</td>
   </tr>
   <tr>
-    <td>Eq. window 1:<br/>w1 = (!w2p9);</td>
-    <td>Eq. window 1:<br/>w1 = (w2p8);</td>
-    <td>Eq. window 1:<br/>w1 = !w2p9;</td>
-    <td>Eq. window 1:<br/>w1 = w2p8;</td>
+    <td>Eq. window 1:<br/>w1 = (!w2.p9);</td>
+    <td>Eq. window 1:<br/>w1 = (w2.p8);</td>
+    <td>Eq. window 1:<br/>w1 = !w2.p9;</td>
+    <td>Eq. window 1:<br/>w1 = w2.p8;</td>
   </tr>
   <tr>
-    <td>Eq. window 2:<br/>w2 = (!w1p4);</td>
-    <td>Eq. window 2:<br/>w2 = (w1p3);</td>
-    <td>Eq. window 2:<br/>w2 = !w1p4;</td>
-    <td>Eq. window 2:<br/>w2 = w1p3;</td>
+    <td>Eq. window 2:<br/>w2 = (!w1.p4);</td>
+    <td>Eq. window 2:<br/>w2 = (w1.p3);</td>
+    <td>Eq. window 2:<br/>w2 = !w1.p4;</td>
+    <td>Eq. window 2:<br/>w2 = w1.p3;</td>
   </tr>
 </table>
 
 #### Buck controller
+
+![Workcraft screenshot of the Buck controller)](https://github.com/allegroCoder/shutters/blob/master/fig/buck-controller.png)
+![Workcraft screenshot of the windows derived](https://github.com/allegroCoder/shutters/blob/master/fig/buck-windows.png)
+
 <table>
   <tr>
     <th>Negative literals without ABC</th>
@@ -147,39 +151,39 @@ The following equations have been obtained by running the tool over the files co
     <th>Positive literals with ABC</th>
   </tr>
   <tr>
-    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
-    <td>Marking eqs. win. 1:<br/>w1p1 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p1 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p1 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p1 = 1;</td>
+    <td>Marking eqs. win. 1:<br/>w1.p1 = 1;</td>
   </tr>
   <tr>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
-    <td>Marking eqs. win. 2:<br/>w2p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p1 = 1;</td>
+    <td>Marking eqs. win. 2:<br/>w2.p1 = 1;</td>
   </tr>
   <tr>
-    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
-    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
-    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
-    <td>Marking eqs. win. 3:<br/>w3p3 = 1;</td>
+    <td>Marking eqs. win. 3:<br/>w3.p3 = 1;</td>
+    <td>Marking eqs. win. 3:<br/>w3.p3 = 1;</td>
+    <td>Marking eqs. win. 3:<br/>w3.p3 = 1;</td>
+    <td>Marking eqs. win. 3:<br/>w3.p3 = 1;</td>
   </tr>
   <tr>
-    <td>Eq. window 1:<br/>w1 = (w2p1*w3p3);</td>
-    <td>Eq. window 1:<br/>w1 = (w2p1*w3p3);</td>
-    <td>Eq. window 1:<br/>w1 = w2p1 * w3p3;</td>
-    <td>Eq. window 1:<br/>w1 = w2p1 * w3p3;</td>
+    <td>Eq. window 1:<br/>w1 = (w2.p1*w3.p3);</td>
+    <td>Eq. window 1:<br/>w1 = (w2.p1*w3.p3);</td>
+    <td>Eq. window 1:<br/>w1 = w2.p1 * w3.p3;</td>
+    <td>Eq. window 1:<br/>w1 = w2.p1 * w3.p3;</td>
   </tr>
   <tr>
-    <td>Eq. window 2:<br/>w2 = (w1p1*w3p3);</td>
-    <td>Eq. window 2:<br/>w2 = (w1p1*w3p3);</td>
-    <td>Eq. window 2:<br/>w2 = w1p1 * w3p3;</td>
-    <td>Eq. window 2:<br/>w2 = w1p1 * w3p3;</td>
+    <td>Eq. window 2:<br/>w2 = (w1.p1*w3.p3);</td>
+    <td>Eq. window 2:<br/>w2 = (w1.p1*w3.p3);</td>
+    <td>Eq. window 2:<br/>w2 = w1.p1 * w3.p3;</td>
+    <td>Eq. window 2:<br/>w2 = w1.p1 * w3.p3;</td>
   </tr>
   <tr>
-    <td>Eq. window 3:<br/>w3 = (w1p1*w2p1);</td>
-    <td>Eq. window 3:<br/>w3 = (w1p1*w2p1);</td>
-    <td>Eq. window 3:<br/>w3 = w1p1 * w2p1;</td>
-    <td>Eq. window 3:<br/>w3 = w1p1 * w2p1;</td>
+    <td>Eq. window 3:<br/>w3 = (w1.p1*w2.p1);</td>
+    <td>Eq. window 3:<br/>w3 = (w1.p1*w2.p1);</td>
+    <td>Eq. window 3:<br/>w3 = w1.p1 * w2.p1;</td>
+    <td>Eq. window 3:<br/>w3 = w1.p1 * w2.p1;</td>
   </tr>
 </table>

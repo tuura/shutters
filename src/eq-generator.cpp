@@ -324,7 +324,7 @@ void push_back_signals(vector<signal_type> *sig, unsigned si, unsigned wi) {
 
 // Create input name attaching number of the window and the name of the place
 string name_place_in_window(unsigned wi, unsigned pi) {
-    return ("w" + to_string(wi+1) + windows[wi].places[pi]);
+    return ("w" + to_string(wi+1) + "." + windows[wi].places[pi]);
 }
 
 // Add signal into the set for the wakeup condition generation
