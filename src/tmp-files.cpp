@@ -26,9 +26,6 @@ int create_tmp_filename(char* tmp_name){
 		    return -1;
 	    }
 
-	    // removing double '\'
-        tmpName[strlen(tmp_name)-1] = '\0';
-
 	    // creating unique fileName
 	    if ( tmpnam(tmp_string) == NULL ) {
 		    fprintf(stderr, "Error on the generation of a unique temp file name.\n");

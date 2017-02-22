@@ -230,7 +230,7 @@ vector<signal_type> push_back_output_window( vector<string> woken_states,\
     unsigned n_states = windows[si].states.size();
     signal_type signal;
     int sig_index;
-    string out_name = "w" + to_string(wi+1);
+    string out_name = "w" + patch::to_string(wi+1);
     vector<signal_type> outputs;
 
     for (unsigned i = 0; i < n_states; i++) {
@@ -324,7 +324,7 @@ void push_back_signals(vector<signal_type> *sig, unsigned si, unsigned wi) {
 
 // Create input name attaching number of the window and the name of the place
 string name_place_in_window(unsigned wi, unsigned pi) {
-    return ("w" + to_string(wi+1) + "." + windows[wi].places[pi]);
+    return ("w" + patch::to_string(wi+1) + "." + windows[wi].places[pi]);
 }
 
 // Add signal into the set for the wakeup condition generation

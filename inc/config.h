@@ -20,6 +20,7 @@
     #include "eq-generator.h"
     #include "eq-refactoring.h"
 #else
+    #include <windows.h>
     #include "PATH\global.h"
     #include "PATH\par-parser.h"
     #include "PATH\mark-parser.h"
@@ -35,5 +36,17 @@
 #define INITIAL             ".initial"
 #define WINDOW              ".window"
 #define STATE               ".state"
+
+#include <sstream>
+
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 
 #endif
