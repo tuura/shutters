@@ -56,3 +56,7 @@ help:
 	@echo "\t-make clean:\tremove $(PROJECT_NAME)"
 	@echo "\t-make rmtmp:\tremove temporary files from the project"
 	@echo "\t-make help:\thelp of the program."
+
+tests:
+	@echo "Run tests:"
+	@./run_test.sh

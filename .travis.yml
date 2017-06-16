@@ -1,0 +1,24 @@
+# setting environment
+sudo: required
+
+# libraries needed for compilation and linking
+before_install:
+    - sudo apt-get install libc6-dev-i386
+    - sudo apt-get install gcc-multilib g++-multilib
+
+# language used
+language: cpp
+
+# compiler to be used
+compiler:
+    - g++
+
+# install dependencies and build scenco
+install:
+    - wget -O espresso https://github.com/workcraft/workcraft-dist-template/raw/master/linux/tools/Espresso/espresso
+    - export PATH="$PATH:$PWD"
+    - chmod +x espresso
+    - make
+
+# run tests
+script: make tests
