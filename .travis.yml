@@ -10,9 +10,7 @@ matrix:
 
         - os: osx
           before_install:
-            - sudo apt-get install libc6-dev-i386
-            - sudo apt-get install gcc-multilib g++-multilib
-
+              - brew update
 # libraries needed for compilation and linking
 
 # language used
