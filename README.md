@@ -1,12 +1,12 @@
 # Shutters - Wake-up equations for Process-windows #
-[![Build Status](https://travis-ci.org/allegroCoder/shutters.svg?branch=master)](https://travis-ci.org/allegroCoder/shutters)
+[![Build Status](https://travis-ci.org/tuura/shutters.svg?branch=master)](https://travis-ci.org/tuura/shutters)
 
 This tool reads `markings` extension files (produced by a process windows mining tool), and generates the wakeup condition for each window, as well as the wakeup marking conditions for the places in each window. The tool uses `espresso` logic minimizer for synthesis of the obtained conditions. `ABC` can be also used optionally for their refactorisation.
 
 ### How to install the tool
 Clone the repository and run the Makefile.
 ```bash
-$ git clone https://github.com/allegroCoder/shutters.git # clone the repository
+$ git clone https://github.com/tuura/shutters.git # clone the repository
 $ make # compile and build the tool
 ```
 Run `make help` for displaying the Makefile commands.
@@ -31,7 +31,7 @@ The following equations have been obtained by running the tool over the files co
 
 #### Motivational example
 
-![Workcraft screenshot of the motivational example (Figure 1)](https://github.com/allegroCoder/shutters/blob/master/fig/motivational-example.png)
+![Workcraft screenshot of the motivational example (Figure 1)](https://github.com/tuura/shutters/blob/master/fig/motivational-example.png)
 
 <table>
   <tr>
@@ -68,7 +68,7 @@ The following equations have been obtained by running the tool over the files co
 
 #### Arbiter
 
-![Workcraft screenshot of the arbiter (Figure 9)](https://github.com/allegroCoder/shutters/blob/master/fig/arbiter.png)
+![Workcraft screenshot of the arbiter (Figure 9)](https://github.com/tuura/shutters/blob/master/fig/arbiter.png)
 
 <table>
   <tr>
@@ -105,7 +105,7 @@ The following equations have been obtained by running the tool over the files co
 
 #### OR causality
 
-![Workcraft screenshot of the OR causality (Figure 10)](https://github.com/allegroCoder/shutters/blob/master/fig/or-causality.png)
+![Workcraft screenshot of the OR causality (Figure 10)](https://github.com/tuura/shutters/blob/master/fig/or-causality.png)
 
 <table>
   <tr>
@@ -142,8 +142,8 @@ The following equations have been obtained by running the tool over the files co
 
 #### Buck controller
 
-![Workcraft screenshot of the Buck controller)](https://github.com/allegroCoder/shutters/blob/master/fig/buck-controller.png)
-![Workcraft screenshot of the windows derived](https://github.com/allegroCoder/shutters/blob/master/fig/buck-windows.png)
+![Workcraft screenshot of the Buck controller)](https://github.com/tuura/shutters/blob/master/fig/buck-controller.png)
+![Workcraft screenshot of the windows derived](https://github.com/tuura/shutters/blob/master/fig/buck-windows.png)
 
 <table>
   <tr>
